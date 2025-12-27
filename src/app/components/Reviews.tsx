@@ -490,7 +490,7 @@ export default function Reviews() {
                               <div>
                                 <div className="mb-2 flex items-center justify-between">
                                   <span className="font-semibold text-blue-700">
-                                    {reply.adminName}
+                                    {reply.adminName}回复
                                   </span>
                                   <span className="text-[14px] text-gray-500">
                                     {formatDate(reply.repliedAt)}
