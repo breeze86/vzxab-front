@@ -31,6 +31,8 @@ export const products = [
     name: "CoolFlow Case 120",
     desc: "高性能机箱散热风扇，提供强劲风量与静音表现的完美平衡",
     price: "¥199",
+    buyLink:
+      "https://www.amazon.com/s?me=A3A15XG0VENWMN&marketplaceID=ATVPDKIKX0DER",
     specs: [
       ["尺寸", "120mm x 25mm"],
       ["转速", "800-2000 RPM"],
@@ -45,6 +47,8 @@ export const products = [
     name: "CoolFlow CPU Tower",
     desc: "塔式CPU散热器，6热管直触设计，轻松压制高性能处理器",
     price: "¥399",
+    buyLink:
+      "https://www.amazon.com/s?me=A3A15XG0VENWMN&marketplaceID=ATVPDKIKX0DER",
     specs: [
       ["尺寸", "125mm x 158mm x 73mm"],
       ["转速", "600-1800 RPM"],

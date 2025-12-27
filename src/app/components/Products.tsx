@@ -61,9 +61,14 @@ export default function Products() {
                     </div>
                   ))}
                 </div>
-                <button className="mt-5 w-full rounded-pill bg-blue-600 py-3 text-[16px] font-semibold text-white">
+                <a
+                  className="mt-5 block w-full rounded-pill bg-blue-600 py-3 text-center text-[16px] font-semibold text-white"
+                  href={product.buyLink}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
                   立即购买
-                </button>
+                </a>
               </div>
             </article>
           ))}
