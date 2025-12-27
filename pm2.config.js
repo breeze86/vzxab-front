@@ -2,7 +2,7 @@ module.exports = {
   apps: [
     {
       name: 'coolflow-portal',
-      script: '/usr/local/bin/pnpm',
+      script: '/usr/bin/pnpm',
       args: 'start',
       cwd: __dirname,
       autorestart: true,
