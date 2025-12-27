@@ -5,7 +5,7 @@ import { useState } from "react";
 import { downloads, faqs } from "../content";
 
 export default function Support() {
-  const [openFaqId, setOpenFaqId] = useState<number | null>(1);
+  const [openFaqId, setOpenFaqId] = useState<number | null>(null);
 
   return (
     <section id="support" className="bg-gray-50 py-20">
