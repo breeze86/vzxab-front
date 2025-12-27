@@ -9,6 +9,7 @@ CREATE TABLE `Review` (
     `isDeleted` BOOLEAN NOT NULL DEFAULT false,
     `deletedAt` DATETIME(3) NULL,
 
+    INDEX `Review_isDeleted_createdAt_idx`(`isDeleted`, `createdAt`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -21,6 +22,7 @@ CREATE TABLE `ReviewReply` (
     `repliedAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
 
     INDEX `ReviewReply_reviewId_idx`(`reviewId`),
+    INDEX `ReviewReply_reviewId_repliedAt_idx`(`reviewId`, `repliedAt`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -35,6 +37,7 @@ CREATE TABLE `Admin` (
     `updatedAt` DATETIME(3) NOT NULL,
 
     UNIQUE INDEX `Admin_username_key`(`username`),
+    INDEX `Admin_isActive_idx`(`isActive`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -48,6 +51,7 @@ CREATE TABLE `AdminSession` (
 
     UNIQUE INDEX `AdminSession_token_key`(`token`),
     INDEX `AdminSession_adminId_idx`(`adminId`),
+    INDEX `AdminSession_expiresAt_idx`(`expiresAt`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
