@@ -1,5 +1,5 @@
 const { PrismaClient } = require("@prisma/client");
-const { randomBytes, scryptSync } = require("crypto");
+const { createHash, randomBytes, scryptSync } = require("crypto");
 
 const prisma = new PrismaClient();
 
@@ -8,6 +8,9 @@ const hashPassword = (password) => {
   const hash = scryptSync(password, salt, 64).toString("hex");
   return `${salt}:${hash}`;
 };
+
+const hashPasswordDigest = (password) =>
+  createHash("sha256").update(password).digest("hex");
 
 const run = async () => {
   const username = process.argv[2];
@@ -21,7 +24,8 @@ const run = async () => {
     process.exit(1);
   }
 
-  const passwordHash = hashPassword(password);
+  const passwordDigest = hashPasswordDigest(password);
+  const passwordHash = hashPassword(passwordDigest);
   const admin = await prisma.admin.create({
     data: {
       username,

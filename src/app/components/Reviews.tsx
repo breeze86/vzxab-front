@@ -31,6 +31,15 @@ type AdminSession = {
   displayName?: string;
 };
 
+const hashPasswordDigest = async (value: string) => {
+  const encoder = new TextEncoder();
+  const data = encoder.encode(value);
+  const digest = await crypto.subtle.digest("SHA-256", data);
+  return Array.from(new Uint8Array(digest))
+    .map((byte) => byte.toString(16).padStart(2, "0"))
+    .join("");
+};
+
 const maskEmail = (email: string) => {
   const [user, domain] = email.split("@");
   if (!domain) {
@@ -194,13 +203,21 @@ export default function Reviews() {
       setAdminError("请输入管理员账号和密码");
       return;
     }
+    if (!crypto?.subtle) {
+      setAdminError("当前浏览器不支持安全登录");
+      return;
+    }
     setAdminError("");
     setIsAdminLoading(true);
     try {
+      const passwordDigest = await hashPasswordDigest(adminForm.password);
       const response = await fetch("/api/admin/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(adminForm),
+        body: JSON.stringify({
+          account: adminForm.account,
+          passwordDigest,
+        }),
       });
       if (!response.ok) {
         setAdminError("账号或密码错误");

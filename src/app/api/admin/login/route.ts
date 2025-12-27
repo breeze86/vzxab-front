@@ -3,6 +3,11 @@ import { prisma } from "@/lib/prisma";
 import { createAdminSession, ADMIN_SESSION_COOKIE } from "@/lib/adminSession";
 import { verifyPassword } from "@/lib/passwords";
 
+const isCookieSecure =
+  process.env.COOKIE_SECURE?.toLowerCase() === "true" ||
+  (process.env.COOKIE_SECURE === undefined &&
+    process.env.NODE_ENV === "production");
+
 export async function POST(request: NextRequest) {
   const body = await request.json().catch(() => null);
   if (!body) {
@@ -10,11 +15,18 @@ export async function POST(request: NextRequest) {
   }
 
   const username = String(body.account ?? "").trim();
-  const password = String(body.password ?? "").trim();
+  const passwordDigest = String(body.passwordDigest ?? "").trim().toLowerCase();
 
-  if (!username || !password) {
+  if (!username || !passwordDigest) {
     return NextResponse.json(
       { error: "Missing credentials" },
+      { status: 400 }
+    );
+  }
+
+  if (!/^[a-f0-9]{64}$/.test(passwordDigest)) {
+    return NextResponse.json(
+      { error: "Invalid credentials" },
       { status: 400 }
     );
   }
@@ -24,7 +36,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
   }
 
-  const isValid = verifyPassword(password, admin.passwordHash);
+  const isValid = verifyPassword(passwordDigest, admin.passwordHash);
   if (!isValid) {
     return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
   }
@@ -39,7 +51,7 @@ export async function POST(request: NextRequest) {
   response.cookies.set(ADMIN_SESSION_COOKIE, token, {
     httpOnly: true,
     sameSite: "lax",
-    secure: process.env.NODE_ENV === "production",
+    secure: isCookieSecure,
     expires: expiresAt,
     path: "/",
   });
