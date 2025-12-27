@@ -9,6 +9,7 @@
     "prisma:generate": "pnpm exec prisma generate",
     "prisma:migrate": "pnpm exec prisma migrate dev",
     "prisma:migrate:init": "pnpm exec prisma migrate dev --name init",
+    "prisma:deploy": "pnpm exec prisma migrate deploy",
     "admin:create": "node scripts/create-admin.cjs",
     "admin:reset-password": "node scripts/reset-admin-password.cjs",
     "lint": "eslint"
