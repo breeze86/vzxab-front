@@ -1,0 +1,30 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Review {
+  id        Int           @id @default(autoincrement())
+  name      String
+  email     String
+  rating    Int
+  content   String        @db.Text
+  createdAt DateTime      @default(now())
+  replies   ReviewReply[]
+}
+
+model ReviewReply {
+  id        Int      @id @default(autoincrement())
+  reviewId  Int
+  adminName String
+  content   String   @db.Text
+  repliedAt DateTime @default(now())
+
+  review Review @relation(fields: [reviewId], references: [id], onDelete: Cascade)
+
+  @@index([reviewId])
+}
