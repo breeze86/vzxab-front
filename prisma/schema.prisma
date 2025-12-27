@@ -17,6 +17,8 @@ model Review {
   isDeleted Boolean       @default(false)
   deletedAt DateTime?
   replies   ReviewReply[]
+
+  @@index([isDeleted, createdAt])
 }
 
 model ReviewReply {
@@ -29,6 +31,7 @@ model ReviewReply {
   review Review @relation(fields: [reviewId], references: [id], onDelete: Cascade)
 
   @@index([reviewId])
+  @@index([reviewId, repliedAt])
 }
 
 model Admin {
@@ -40,6 +43,8 @@ model Admin {
   createdAt    DateTime       @default(now())
   updatedAt    DateTime       @updatedAt
   sessions     AdminSession[]
+
+  @@index([isActive])
 }
 
 model AdminSession {
@@ -52,4 +57,5 @@ model AdminSession {
   admin Admin @relation(fields: [adminId], references: [id], onDelete: Cascade)
 
   @@index([adminId])
+  @@index([expiresAt])
 }
