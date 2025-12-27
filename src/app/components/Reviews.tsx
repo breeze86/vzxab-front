@@ -112,19 +112,19 @@ export default function Reviews() {
 
   const averageRating = useMemo(() => {
     if (summary.totalCount) {
-      return summary.averageRating.toFixed(1);
+      return Math.round(summary.averageRating).toString();
     }
     if (!items.length) {
-      return "0.0";
+      return "0";
     }
     const total = items.reduce((sum, item) => sum + item.rating, 0);
-    return (total / items.length).toFixed(1);
+    return Math.round(total / items.length).toString();
   }, [items, summary.averageRating, summary.totalCount]);
 
   const totalReviews = summary.totalCount || items.length;
   const ratingValue = Number(averageRating);
   const filledStars = Number.isFinite(ratingValue)
-    ? Math.min(5, Math.max(0, Math.ceil(ratingValue)))
+    ? Math.min(5, Math.max(0, ratingValue))
     : 0;
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -190,7 +190,7 @@ export default function Reviews() {
               );
             })}
             <span className="text-[20px] leading-[28px] text-gray-900">
-              {averageRating} / 5.0
+              {averageRating} / 5
             </span>
           </div>
           <p className="mt-2 text-[16px] text-gray-600">
