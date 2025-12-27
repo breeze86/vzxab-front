@@ -14,6 +14,8 @@ model Review {
   rating    Int
   content   String        @db.Text
   createdAt DateTime      @default(now())
+  isDeleted Boolean       @default(false)
+  deletedAt DateTime?
   replies   ReviewReply[]
 }
 
@@ -27,4 +29,27 @@ model ReviewReply {
   review Review @relation(fields: [reviewId], references: [id], onDelete: Cascade)
 
   @@index([reviewId])
+}
+
+model Admin {
+  id           Int            @id @default(autoincrement())
+  username     String         @unique
+  displayName  String
+  passwordHash String
+  isActive     Boolean        @default(true)
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  sessions     AdminSession[]
+}
+
+model AdminSession {
+  id        Int      @id @default(autoincrement())
+  adminId   Int
+  token     String   @unique
+  createdAt DateTime @default(now())
+  expiresAt DateTime
+
+  admin Admin @relation(fields: [adminId], references: [id], onDelete: Cascade)
+
+  @@index([adminId])
 }

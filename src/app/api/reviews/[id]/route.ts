@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getAdminFromRequest } from "@/lib/adminSession";
 
-export async function POST(
+export async function DELETE(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
@@ -22,27 +22,13 @@ export async function POST(
     return NextResponse.json({ error: "Review not found" }, { status: 404 });
   }
 
-  const body = await request.json().catch(() => null);
-  if (!body) {
-    return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
-  }
-
-  const content = String(body.content ?? "").trim();
-
-  if (!content) {
-    return NextResponse.json(
-      { error: "Missing required fields" },
-      { status: 400 }
-    );
-  }
-
-  const reply = await prisma.reviewReply.create({
+  await prisma.review.update({
+    where: { id: reviewId },
     data: {
-      reviewId,
-      adminName: admin.displayName || admin.username,
-      content,
+      isDeleted: true,
+      deletedAt: new Date(),
     },
   });
 
-  return NextResponse.json(reply, { status: 201 });
+  return NextResponse.json({ ok: true });
 }

@@ -10,6 +10,7 @@ export async function GET(request: Request) {
 
   const [reviews, summary] = await Promise.all([
     prisma.review.findMany({
+      where: { isDeleted: false },
       orderBy: { createdAt: "desc" },
       take,
       include: {
@@ -19,6 +20,7 @@ export async function GET(request: Request) {
       },
     }),
     prisma.review.aggregate({
+      where: { isDeleted: false },
       _avg: { rating: true },
       _count: { _all: true },
     }),

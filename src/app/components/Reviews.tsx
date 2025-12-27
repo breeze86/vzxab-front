@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { BadgeCheck, MessageCircle, Send, Star, User } from "lucide-react";
+import { BadgeCheck, MessageCircle, Send, Star, Trash2, User } from "lucide-react";
 import { reviews as seedReviews } from "../content";
 
 type ReviewReply = {
@@ -24,6 +24,11 @@ type ReviewItem = {
 type ReviewSummary = {
   totalCount: number;
   averageRating: number;
+};
+
+type AdminSession = {
+  authenticated: boolean;
+  displayName?: string;
 };
 
 const maskEmail = (email: string) => {
@@ -80,34 +85,69 @@ export default function Reviews() {
     rating: 5,
     content: "",
   });
+  const [adminSession, setAdminSession] = useState<AdminSession>({
+    authenticated: false,
+  });
+  const [isAdminOpen, setIsAdminOpen] = useState(false);
+  const [adminForm, setAdminForm] = useState({ account: "", password: "" });
+  const [adminError, setAdminError] = useState("");
+  const [isAdminLoading, setIsAdminLoading] = useState(false);
+  const [replyDrafts, setReplyDrafts] = useState<Record<number, string>>({});
+  const [replyingId, setReplyingId] = useState<number | null>(null);
+  const [activeReplyId, setActiveReplyId] = useState<number | null>(null);
+  const [isDeleteOpen, setIsDeleteOpen] = useState(false);
+  const [deleteTargetId, setDeleteTargetId] = useState<number | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  const loadReviews = async () => {
+    try {
+      const response = await fetch("/api/reviews?limit=3");
+      if (!response.ok) {
+        return;
+      }
+      const data = await response.json();
+      if (Array.isArray(data)) {
+        setItems(data);
+        return;
+      }
+      if (data?.items) {
+        setItems(data.items);
+      }
+      if (data?.summary) {
+        setSummary({
+          totalCount: Number(data.summary.totalCount ?? 0),
+          averageRating: Number(data.summary.averageRating ?? 0),
+        });
+      }
+    } catch {
+      // keep seed data on failure
+    }
+  };
+
   useEffect(() => {
-    const fetchReviews = async () => {
+    loadReviews();
+  }, []);
+
+  useEffect(() => {
+    const fetchAdminSession = async () => {
       try {
-        const response = await fetch("/api/reviews?limit=3");
+        const response = await fetch("/api/admin/session");
         if (!response.ok) {
           return;
         }
         const data = await response.json();
-        if (Array.isArray(data)) {
-          setItems(data);
-          return;
-        }
-        if (data?.items) {
-          setItems(data.items);
-        }
-        if (data?.summary) {
-          setSummary({
-            totalCount: Number(data.summary.totalCount ?? 0),
-            averageRating: Number(data.summary.averageRating ?? 0),
+        if (data?.authenticated) {
+          setAdminSession({
+            authenticated: true,
+            displayName: data.admin?.displayName,
           });
         }
       } catch {
-        // keep seed data on failure
+        // ignore session errors
       }
     };
-    fetchReviews();
+    fetchAdminSession();
   }, []);
 
   const averageRating = useMemo(() => {
@@ -140,27 +180,101 @@ export default function Reviews() {
         body: JSON.stringify(formState),
       });
       if (response.ok) {
-        const latest = await fetch("/api/reviews?limit=3");
-        if (latest.ok) {
-          const data = await latest.json();
-          if (Array.isArray(data)) {
-            setItems(data);
-          } else {
-            if (data?.items) {
-              setItems(data.items);
-            }
-            if (data?.summary) {
-              setSummary({
-                totalCount: Number(data.summary.totalCount ?? 0),
-                averageRating: Number(data.summary.averageRating ?? 0),
-              });
-            }
-          }
-        }
+        await loadReviews();
         setFormState({ name: "", email: "", rating: 5, content: "" });
       }
     } finally {
       setIsSubmitting(false);
+    }
+  };
+
+  const handleAdminLogin = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (!adminForm.account || !adminForm.password) {
+      setAdminError("请输入管理员账号和密码");
+      return;
+    }
+    setAdminError("");
+    setIsAdminLoading(true);
+    try {
+      const response = await fetch("/api/admin/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(adminForm),
+      });
+      if (!response.ok) {
+        setAdminError("账号或密码错误");
+        return;
+      }
+      const data = await response.json();
+      setAdminSession({
+        authenticated: true,
+        displayName: data.displayName,
+      });
+      setIsAdminOpen(false);
+      setAdminForm({ account: "", password: "" });
+    } finally {
+      setIsAdminLoading(false);
+    }
+  };
+
+  const handleAdminLogout = async () => {
+    try {
+      await fetch("/api/admin/logout", { method: "POST" });
+    } finally {
+      setAdminSession({ authenticated: false });
+    }
+  };
+
+  const handleReplySubmit = async (reviewId?: number) => {
+    if (!reviewId) {
+      return;
+    }
+    const content = replyDrafts[reviewId]?.trim();
+    if (!content) {
+      return;
+    }
+    setReplyingId(reviewId);
+    try {
+      const response = await fetch(`/api/reviews/${reviewId}/replies`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ content }),
+      });
+      if (response.ok) {
+        setReplyDrafts((prev) => ({ ...prev, [reviewId]: "" }));
+        setActiveReplyId(null);
+        await loadReviews();
+      }
+    } finally {
+      setReplyingId(null);
+    }
+  };
+
+  const handleDeleteClick = (reviewId?: number) => {
+    if (!reviewId) {
+      return;
+    }
+    setDeleteTargetId(reviewId);
+    setIsDeleteOpen(true);
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!deleteTargetId) {
+      return;
+    }
+    setIsDeleting(true);
+    try {
+      const response = await fetch(`/api/reviews/${deleteTargetId}`, {
+        method: "DELETE",
+      });
+      if (response.ok) {
+        await loadReviews();
+      }
+      setIsDeleteOpen(false);
+      setDeleteTargetId(null);
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -172,10 +286,31 @@ export default function Reviews() {
             <h2 className="font-heading text-[36px] font-semibold leading-[40px] tracking-[0.4px] text-gray-900">
               用户评价
             </h2>
-            <span className="inline-flex items-center gap-2 rounded-pill bg-gray-100 px-4 py-1 text-[14px] leading-[20px] text-gray-900">
-              <BadgeCheck className="h-4 w-4 text-blue-600" aria-hidden="true" />
-              管理员
-            </span>
+            {adminSession.authenticated ? (
+              <div className="inline-flex items-center gap-3">
+                <span className="inline-flex items-center gap-2 rounded-pill bg-gray-100 px-4 py-1 text-[14px] leading-[20px] text-gray-900">
+                  <BadgeCheck className="h-4 w-4 text-blue-600" aria-hidden="true" />
+                  管理员已登录
+                </span>
+                <button
+                  className="rounded-pill border border-gray-200 px-4 py-1 text-[14px] font-semibold text-gray-700 transition hover:bg-gray-100"
+                  type="button"
+                  onClick={handleAdminLogout}
+                >
+                  退出
+                </button>
+              </div>
+            ) : (
+              <button
+                className="inline-flex items-center gap-2 rounded-pill bg-gray-100 px-4 py-1 text-[14px] leading-[20px] text-gray-900 transition hover:bg-gray-200"
+                type="button"
+                onClick={() => setIsAdminOpen(true)}
+                aria-label="管理员登录"
+              >
+                <BadgeCheck className="h-4 w-4 text-blue-600" aria-hidden="true" />
+                管理员
+              </button>
+            )}
           </div>
           <div className="mt-3 flex items-center justify-center gap-2">
             {Array.from({ length: 5 }).map((_, index) => {
@@ -240,6 +375,68 @@ export default function Reviews() {
                       <p className="mt-2 text-[16px] leading-[24px] text-gray-700">
                         {review.content}
                       </p>
+                      {adminSession.authenticated ? (
+                        review.id ? (
+                          <>
+                          <div className="mt-2 flex justify-end gap-1">
+                            <button
+                              className="inline-flex cursor-pointer items-center rounded-full p-1 text-gray-400 transition hover:bg-red-50 hover:text-red-600"
+                              type="button"
+                              onClick={() => handleDeleteClick(review.id)}
+                              title="删除评论"
+                              aria-label="删除评论"
+                            >
+                              <Trash2 className="h-4 w-4" aria-hidden="true" />
+                            </button>
+                            <button
+                              className="inline-flex cursor-pointer items-center rounded-full p-1 text-gray-400 transition hover:bg-blue-50 hover:text-blue-600"
+                              type="button"
+                              onClick={() =>
+                                  setActiveReplyId((prev) =>
+                                    prev === review.id ? null : review.id ?? null
+                                  )
+                                }
+                                title="回复消息"
+                                aria-label="回复消息"
+                              >
+                                <MessageCircle className="h-4 w-4" aria-hidden="true" />
+                              </button>
+                            </div>
+                            {activeReplyId === review.id ? (
+                              <div className="mt-3 rounded-[12px] border border-gray-200 bg-white p-4">
+                                <div className="text-[14px] font-semibold text-gray-900">
+                                  管理员回复
+                                </div>
+                                <textarea
+                                  className="mt-2 min-h-[96px] w-full rounded-[10px] border border-[#d1d5dc] px-4 py-3 text-[14px]"
+                                  placeholder="输入回复内容..."
+                                  value={replyDrafts[review.id] ?? ""}
+                                  onChange={(event) =>
+                                    setReplyDrafts((prev) => ({
+                                      ...prev,
+                                      [review.id as number]: event.target.value,
+                                    }))
+                                  }
+                                />
+                                <div className="mt-3 flex justify-end">
+                                  <button
+                                    className="rounded-pill bg-blue-600 px-5 py-2 text-[14px] font-semibold text-white disabled:cursor-not-allowed disabled:opacity-70"
+                                    type="button"
+                                    disabled={replyingId === review.id}
+                                    onClick={() => handleReplySubmit(review.id)}
+                                  >
+                                    {replyingId === review.id ? "提交中..." : "提交回复"}
+                                  </button>
+                                </div>
+                              </div>
+                            ) : null}
+                          </>
+                        ) : (
+                          <div className="mt-4 text-[14px] text-gray-500">
+                            示例评论无法回复
+                          </div>
+                        )
+                      ) : null}
                       {review.replies?.length
                         ? review.replies.map((reply, replyIndex) => (
                             <div
@@ -356,6 +553,127 @@ export default function Reviews() {
           </div>
         </div>
       </div>
+      {isAdminOpen ? (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4 py-6"
+          role="dialog"
+          aria-modal="true"
+          aria-label="管理员登录"
+          onClick={() => setIsAdminOpen(false)}
+        >
+          <div
+            className="w-full max-w-sm rounded-2xl bg-white p-6 shadow-[0_30px_60px_-40px_rgba(15,23,42,0.8)]"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <div className="mb-4 flex items-center justify-between">
+              <div>
+                <div className="text-[18px] font-semibold text-gray-900">
+                  管理员登录
+                </div>
+                <div className="text-[13px] text-gray-500">
+                  仅限授权管理员使用
+                </div>
+              </div>
+              <button
+                className="rounded-full p-2 text-gray-500 transition hover:bg-gray-100"
+                type="button"
+                onClick={() => setIsAdminOpen(false)}
+                aria-label="关闭"
+              >
+                ×
+              </button>
+            </div>
+            <form className="flex flex-col gap-4" onSubmit={handleAdminLogin}>
+              <div className="flex flex-col gap-2">
+                <label className="text-[13px] font-semibold text-gray-900">
+                  管理员账号
+                </label>
+                <input
+                  className="rounded-[10px] border border-[#d1d5dc] px-4 py-3 text-[15px]"
+                  placeholder="请输入管理员账号"
+                  value={adminForm.account}
+                  onChange={(event) =>
+                    setAdminForm((prev) => ({ ...prev, account: event.target.value }))
+                  }
+                />
+              </div>
+              <div className="flex flex-col gap-2">
+                <label className="text-[13px] font-semibold text-gray-900">
+                  登录密码
+                </label>
+                <input
+                  type="password"
+                  className="rounded-[10px] border border-[#d1d5dc] px-4 py-3 text-[15px]"
+                  placeholder="请输入密码"
+                  value={adminForm.password}
+                  onChange={(event) =>
+                    setAdminForm((prev) => ({ ...prev, password: event.target.value }))
+                  }
+                />
+              </div>
+              {adminError ? (
+                <div className="text-[13px] text-red-500">{adminError}</div>
+              ) : null}
+              <div className="mt-2 flex gap-3">
+                <button
+                  className="flex-1 rounded-pill border border-gray-200 px-4 py-2 text-[14px] font-semibold text-gray-700 hover:bg-gray-50"
+                  type="button"
+                  onClick={() => setIsAdminOpen(false)}
+                  disabled={isAdminLoading}
+                >
+                  取消
+                </button>
+                <button
+                  className="flex-1 rounded-pill bg-blue-600 px-4 py-2 text-[14px] font-semibold text-white disabled:cursor-not-allowed disabled:opacity-70"
+                  type="submit"
+                  disabled={isAdminLoading}
+                >
+                  {isAdminLoading ? "登录中..." : "登录"}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      ) : null}
+      {isDeleteOpen ? (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4 py-6"
+          role="dialog"
+          aria-modal="true"
+          aria-label="删除评论确认"
+          onClick={() => setIsDeleteOpen(false)}
+        >
+          <div
+            className="w-full max-w-sm rounded-2xl bg-white p-6 shadow-[0_30px_60px_-40px_rgba(15,23,42,0.8)]"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <div className="mb-3 text-[18px] font-semibold text-gray-900">
+              确认删除评论
+            </div>
+            <p className="text-[14px] leading-[22px] text-gray-600">
+              删除后将无法恢复，确定要继续吗？
+            </p>
+            <div className="mt-6 flex gap-3">
+              <button
+                className="flex-1 rounded-pill border border-gray-200 px-4 py-2 text-[14px] font-semibold text-gray-700 hover:bg-gray-50"
+                type="button"
+                onClick={() => setIsDeleteOpen(false)}
+                disabled={isDeleting}
+              >
+                取消
+              </button>
+              <button
+                className="flex-1 rounded-pill bg-red-600 px-4 py-2 text-[14px] font-semibold text-white disabled:cursor-not-allowed disabled:opacity-70"
+                type="button"
+                onClick={handleDeleteConfirm}
+                disabled={isDeleting}
+              >
+                {isDeleting ? "删除中..." : "确认删除"}
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
     </section>
   );
 }
