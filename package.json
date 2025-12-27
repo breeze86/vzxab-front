@@ -10,10 +10,12 @@
     "prisma:migrate": "pnpm exec prisma migrate dev",
     "prisma:migrate:init": "pnpm exec prisma migrate dev --name init",
     "admin:create": "node scripts/create-admin.cjs",
+    "admin:reset-password": "node scripts/reset-admin-password.cjs",
     "lint": "eslint"
   },
   "dependencies": {
     "@prisma/client": "^6.10.1",
+    "js-sha256": "^0.11.0",
     "lucide-react": "^0.562.0",
     "next": "16.1.1",
     "react": "19.2.3",

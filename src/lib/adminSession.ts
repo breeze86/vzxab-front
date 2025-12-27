@@ -1,8 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { randomBytes } from "crypto";
 import type { NextRequest } from "next/server";
-
-export const ADMIN_SESSION_COOKIE = "coolflow_admin_session";
 const SESSION_DAYS = 7;
 
 export const createAdminSession = async (adminId: number) => {
@@ -20,14 +18,22 @@ export const createAdminSession = async (adminId: number) => {
   return { token, expiresAt };
 };
 
+export const getTokenFromRequest = (request: NextRequest) => {
+  const authHeader = request.headers.get("authorization");
+  if (authHeader?.startsWith("Bearer ")) {
+    return authHeader.slice("Bearer ".length).trim();
+  }
+  return null;
+};
+
 export const getAdminFromRequest = async (request: NextRequest) => {
-  const cookie = request.cookies.get(ADMIN_SESSION_COOKIE)?.value;
-  if (!cookie) {
+  const token = getTokenFromRequest(request);
+  if (!token) {
     return null;
   }
 
   const session = await prisma.adminSession.findUnique({
-    where: { token: cookie },
+    where: { token },
     include: { admin: true },
   });
 

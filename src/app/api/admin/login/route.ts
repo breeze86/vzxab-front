@@ -1,12 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { createAdminSession, ADMIN_SESSION_COOKIE } from "@/lib/adminSession";
-import { verifyPassword } from "@/lib/passwords";
-
-const isCookieSecure =
-  process.env.COOKIE_SECURE?.toLowerCase() === "true" ||
-  (process.env.COOKIE_SECURE === undefined &&
-    process.env.NODE_ENV === "production");
+import { createAdminSession } from "@/lib/adminSession";
 
 export async function POST(request: NextRequest) {
   const body = await request.json().catch(() => null);
@@ -36,8 +30,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
   }
 
-  const isValid = verifyPassword(passwordDigest, admin.passwordHash);
-  if (!isValid) {
+  if (passwordDigest !== admin.passwordHash) {
     return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
   }
 
@@ -46,14 +39,8 @@ export async function POST(request: NextRequest) {
     id: admin.id,
     username: admin.username,
     displayName: admin.displayName,
-  });
-
-  response.cookies.set(ADMIN_SESSION_COOKIE, token, {
-    httpOnly: true,
-    sameSite: "lax",
-    secure: isCookieSecure,
-    expires: expiresAt,
-    path: "/",
+    token,
+    expiresAt,
   });
 
   return response;

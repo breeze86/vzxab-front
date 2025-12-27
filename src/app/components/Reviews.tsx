@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { sha256 } from "js-sha256";
 import { BadgeCheck, MessageCircle, Send, Star, Trash2, User } from "lucide-react";
 import { reviews as seedReviews } from "../content";
 
@@ -32,13 +33,18 @@ type AdminSession = {
 };
 
 const hashPasswordDigest = async (value: string) => {
-  const encoder = new TextEncoder();
-  const data = encoder.encode(value);
-  const digest = await crypto.subtle.digest("SHA-256", data);
-  return Array.from(new Uint8Array(digest))
-    .map((byte) => byte.toString(16).padStart(2, "0"))
-    .join("");
+  if (crypto?.subtle) {
+    const encoder = new TextEncoder();
+    const data = encoder.encode(value);
+    const digest = await crypto.subtle.digest("SHA-256", data);
+    return Array.from(new Uint8Array(digest))
+      .map((byte) => byte.toString(16).padStart(2, "0"))
+      .join("");
+  }
+  return sha256(value);
 };
+
+const ADMIN_TOKEN_KEY = "coolflow_admin_token";
 
 const maskEmail = (email: string) => {
   const [user, domain] = email.split("@");
@@ -97,6 +103,7 @@ export default function Reviews() {
   const [adminSession, setAdminSession] = useState<AdminSession>({
     authenticated: false,
   });
+  const [adminToken, setAdminToken] = useState<string | null>(null);
   const [isAdminOpen, setIsAdminOpen] = useState(false);
   const [adminForm, setAdminForm] = useState({ account: "", password: "" });
   const [adminError, setAdminError] = useState("");
@@ -140,8 +147,15 @@ export default function Reviews() {
 
   useEffect(() => {
     const fetchAdminSession = async () => {
+      const token = localStorage.getItem(ADMIN_TOKEN_KEY);
+      if (!token) {
+        return;
+      }
+      setAdminToken(token);
       try {
-        const response = await fetch("/api/admin/session");
+        const response = await fetch("/api/admin/session", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
         if (!response.ok) {
           return;
         }
@@ -203,10 +217,6 @@ export default function Reviews() {
       setAdminError("请输入管理员账号和密码");
       return;
     }
-    if (!crypto?.subtle) {
-      setAdminError("当前浏览器不支持安全登录");
-      return;
-    }
     setAdminError("");
     setIsAdminLoading(true);
     try {
@@ -224,6 +234,10 @@ export default function Reviews() {
         return;
       }
       const data = await response.json();
+      if (data?.token) {
+        localStorage.setItem(ADMIN_TOKEN_KEY, data.token);
+        setAdminToken(data.token);
+      }
       setAdminSession({
         authenticated: true,
         displayName: data.displayName,
@@ -236,10 +250,16 @@ export default function Reviews() {
   };
 
   const handleAdminLogout = async () => {
+    const token = adminToken;
     try {
-      await fetch("/api/admin/logout", { method: "POST" });
+      await fetch("/api/admin/logout", {
+        method: "POST",
+        headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+      });
     } finally {
       setAdminSession({ authenticated: false });
+      setAdminToken(null);
+      localStorage.removeItem(ADMIN_TOKEN_KEY);
     }
   };
 
@@ -253,9 +273,13 @@ export default function Reviews() {
     }
     setReplyingId(reviewId);
     try {
+      const token = adminToken;
       const response = await fetch(`/api/reviews/${reviewId}/replies`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
         body: JSON.stringify({ content }),
       });
       if (response.ok) {
@@ -282,8 +306,10 @@ export default function Reviews() {
     }
     setIsDeleting(true);
     try {
+      const token = adminToken;
       const response = await fetch(`/api/reviews/${deleteTargetId}`, {
         method: "DELETE",
+        headers: token ? { Authorization: `Bearer ${token}` } : undefined,
       });
       if (response.ok) {
         await loadReviews();

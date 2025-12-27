@@ -7,26 +7,22 @@ const hashPasswordDigest = (password) => sha256(password);
 
 const run = async () => {
   const username = process.argv[2];
-  const displayName = process.argv[3];
-  const password = process.argv[4];
+  const password = process.argv[3];
 
-  if (!username || !displayName || !password) {
+  if (!username || !password) {
     console.error(
-      "Usage: node scripts/create-admin.cjs <username> <displayName> <password>"
+      "Usage: node scripts/reset-admin-password.cjs <username> <newPassword>"
     );
     process.exit(1);
   }
 
   const passwordHash = hashPasswordDigest(password);
-  const admin = await prisma.admin.create({
-    data: {
-      username,
-      displayName,
-      passwordHash,
-    },
+  const admin = await prisma.admin.update({
+    where: { username },
+    data: { passwordHash },
   });
 
-  console.log(`Admin created: ${admin.username} (${admin.displayName})`);
+  console.log(`Admin password reset: ${admin.username}`);
 };
 
 run()
