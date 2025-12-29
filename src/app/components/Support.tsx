@@ -202,8 +202,11 @@ export default function Support() {
                     <option value="">请选择咨询主题</option>
                     <option>产品咨询</option>
                     <option>技术支持</option>
+                    <option>合作洽谈</option>
+                    <option>功能建议</option>
+                    <option>价格咨询</option>
                     <option>售后保修</option>
-                    <option>购买咨询</option>
+                    <option>发票开具</option>
                     <option>其他问题</option>
                   </select>
                 </div>
