@@ -45,6 +45,7 @@ const hashPasswordDigest = async (value: string) => {
 };
 
 const ADMIN_TOKEN_KEY = "coolflow_admin_token";
+const isValidEmail = (value: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
 
 const maskEmail = (email: string) => {
   const [user, domain] = email.split("@");
@@ -100,6 +101,11 @@ export default function Reviews() {
     rating: 5,
     content: "",
   });
+  const reviewMaxChars = 300;
+  const reviewName = formState.name.trim();
+  const reviewEmail = formState.email.trim();
+  const isReviewNameInvalid = reviewName.length > 0 && reviewName.length < 2;
+  const isReviewEmailInvalid = reviewEmail.length > 0 && !isValidEmail(reviewEmail);
   const [adminSession, setAdminSession] = useState<AdminSession>({
     authenticated: false,
   });
@@ -189,10 +195,20 @@ export default function Reviews() {
   const filledStars = Number.isFinite(ratingValue)
     ? Math.min(5, Math.max(0, ratingValue))
     : 0;
+  const isReviewInvalid =
+    !reviewName ||
+    !reviewEmail ||
+    !formState.content ||
+    isReviewNameInvalid ||
+    isReviewEmailInvalid ||
+    formState.content.length > reviewMaxChars;
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (!formState.name || !formState.email || !formState.content) {
+      return;
+    }
+    if (formState.content.length > reviewMaxChars) {
       return;
     }
     setIsSubmitting(true);
@@ -524,23 +540,36 @@ export default function Reviews() {
                     className="rounded-[10px] border border-[#d1d5dc] px-4 py-3 text-[16px]"
                     placeholder="请输入您的姓名"
                     value={formState.name}
+                    maxLength={50}
                     onChange={(event) =>
                       setFormState((prev) => ({ ...prev, name: event.target.value }))
                     }
                   />
+                  {isReviewNameInvalid ? (
+                    <div className="text-[12px] text-red-500">
+                      姓名至少需要 2 个字符
+                    </div>
+                  ) : null}
                 </div>
                 <div className="flex flex-col gap-2">
                   <label className="text-[14px] font-semibold text-gray-900">
                     邮箱地址 <span className="text-red-500">*</span>
                   </label>
                   <input
+                    type="email"
                     className="rounded-[10px] border border-[#d1d5dc] px-4 py-3 text-[16px]"
                     placeholder="example@email.com"
                     value={formState.email}
+                    maxLength={100}
                     onChange={(event) =>
                       setFormState((prev) => ({ ...prev, email: event.target.value }))
                     }
                   />
+                  {isReviewEmailInvalid ? (
+                    <div className="text-[12px] text-red-500">
+                      请输入有效的邮箱地址
+                    </div>
+                  ) : null}
                   <span className="text-[12px] text-gray-500">
                     您的邮箱地址不会被公开显示
                   </span>
@@ -582,11 +611,20 @@ export default function Reviews() {
                       setFormState((prev) => ({ ...prev, content: event.target.value }))
                     }
                   />
+                  <div
+                    className={`text-[12px] ${
+                      formState.content.length > reviewMaxChars
+                        ? "text-red-500"
+                        : "text-gray-500"
+                    }`}
+                  >
+                    {formState.content.length}/{reviewMaxChars}
+                  </div>
                 </div>
                 <button
                   className="mt-2 flex w-full items-center justify-center gap-2 rounded-pill bg-blue-600 py-3 text-[16px] font-semibold text-white disabled:cursor-not-allowed disabled:opacity-70"
                   type="submit"
-                  disabled={isSubmitting}
+                  disabled={isSubmitting || isReviewInvalid}
                 >
                   <Send className="h-5 w-5" aria-hidden="true" />
                   {isSubmitting ? "提交中..." : "提交评论"}

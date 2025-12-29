@@ -1,4 +1,5 @@
-import { Mail, MapPin, Phone, Wind } from "lucide-react";
+import Image from "next/image";
+import { Mail, MapPin, Phone } from "lucide-react";
 
 export default function Footer() {
   return (
@@ -7,8 +8,7 @@ export default function Footer() {
         <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-4">
           <div>
             <div className="mb-3 flex items-center gap-2 font-heading text-[20px] font-semibold">
-              <Wind className="h-8 w-8 text-blue-400" aria-hidden="true" />
-              <span>CoolFlow</span>
+              <span>VZXAB</span>
             </div>
             <p className="text-[16px] leading-[24px] text-gray-400">
               专注于提供高性能散热解决方案，让您的设备始终保持最佳状态。

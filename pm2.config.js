@@ -1,7 +1,7 @@
 module.exports = {
   apps: [
     {
-      name: 'coolflow-portal',
+      name: 'vzxab-front',
       script: '/usr/bin/pnpm',
       args: 'start',
       cwd: __dirname,

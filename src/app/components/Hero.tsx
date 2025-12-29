@@ -42,7 +42,10 @@ export default function Hero() {
             <ImageWithFallback 
               src="/assets/images/hero-cooling-fan.jpg"
               alt="电脑风扇"
+              width={1200}
+              height={900}
               className="relative rounded-3xl shadow-2xl w-full h-auto object-cover"
+              sizes="(min-width: 1024px) 50vw, 100vw"
             />
           </div>
         </div>

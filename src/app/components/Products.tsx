@@ -23,7 +23,9 @@ export default function Products() {
                   <ImageWithFallback 
                     src={product.image}
                     alt="电脑风扇"
-                    className="w-full h-full object-cover hover:scale-110 transition duration-500"
+                    fill
+                    sizes="(min-width: 1024px) 50vw, 100vw"
+                    className="object-cover hover:scale-110 transition duration-500"
                   />
                 <span className="absolute left-4 top-4 inline-flex items-center rounded-pill bg-blue-600 px-4 py-1 text-[14px] leading-[20px] text-white">
                   {product.tag}

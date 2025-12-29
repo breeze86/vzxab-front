@@ -32,7 +32,7 @@ export const products = [
     desc: "高性能机箱散热风扇，提供强劲风量与静音表现的完美平衡",
     price: "¥199",
     buyLink:
-      "https://www.amazon.com/s?me=A3A15XG0VENWMN&marketplaceID=ATVPDKIKX0DER",
+      "https://www.amazon.com/Cooler-Cooling-Lighting-Dynamic-Multi-Graph/dp/B0FQHV7CWC/ref=sr_1_2?dib=eyJ2IjoiMSJ9.AL-TedRXzren6xUvXq-55UyyDJHjLaj8aW6tqZqtOJ7GjHj071QN20LucGBJIEps.qi9kH1HqI3RObu5FnEme4nAUtvpWMVQCNQH2z45M2gc&dib_tag=se&m=A3A15XG0VENWMN&marketplaceID=ATVPDKIKX0DER&nsdOptOutParam=true&qid=1766919428&s=merchant-items&sr=1-2",
     specs: [
       ["尺寸", "120mm x 25mm"],
       ["转速", "800-2000 RPM"],
@@ -48,7 +48,7 @@ export const products = [
     desc: "塔式CPU散热器，6热管直触设计，轻松压制高性能处理器",
     price: "¥399",
     buyLink:
-      "https://www.amazon.com/s?me=A3A15XG0VENWMN&marketplaceID=ATVPDKIKX0DER",
+      "https://www.amazon.com/Cooler-Cooling-Lighting-Dynamic-Multi-Graph/dp/B0D7BKQX44/ref=sr_1_3?dib=eyJ2IjoiMSJ9.AL-TedRXzren6xUvXq-55UyyDJHjLaj8aW6tqZqtOJ7GjHj071QN20LucGBJIEps.qi9kH1HqI3RObu5FnEme4nAUtvpWMVQCNQH2z45M2gc&dib_tag=se&m=A3A15XG0VENWMN&marketplaceID=ATVPDKIKX0DER&nsdOptOutParam=true&qid=1766919428&s=merchant-items&sr=1-3",
     specs: [
       ["尺寸", "125mm x 158mm x 73mm"],
       ["转速", "600-1800 RPM"],

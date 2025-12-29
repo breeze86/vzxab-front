@@ -59,3 +59,12 @@ model AdminSession {
   @@index([adminId])
   @@index([expiresAt])
 }
+
+model CustomerCooperation {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String
+  subject   String
+  message   String   @db.Text
+  createdAt DateTime @default(now())
+}
