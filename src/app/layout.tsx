@@ -15,7 +15,7 @@ const manrope = Manrope({
 });
 
 export const metadata: Metadata = {
-  title: "CoolFlow | 电脑风扇门户网站",
+  title: "PC机箱风扇 | CPU风扇 | 电脑 风扇 | VZXAB",
   description:
     "专注打造高性能机箱风扇与CPU散热器，提供全方位散热解决方案。",
 };

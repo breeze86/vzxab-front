@@ -75,33 +75,46 @@ export const specs = [
   ["质保期限", "5 年"],
 ];
 
-export const reviews = [
-  {
-    name: "张伟",
-    email: "zhang***@gmail.com",
-    date: "2024-12-20",
-    rating: 5,
-    text: "机箱风扇真的很静音，RGB灯效也非常漂亮，散热效果超出预期！",
-    reply: {
-      date: "2024-12-21",
-      text: "感谢您的好评！我们很高兴您喜欢这款产品。如有任何问题，欢迎随时联系我们的客服团队。",
-    },
-  },
-  {
-    name: "李娜",
-    email: "lina***@163.com",
-    date: "2024-12-18",
-    rating: 5,
-    text: "CPU散热器性能强大，安装也很方便，温度降了10度，非常满意！",
-  },
-  {
-    name: "王强",
-    email: "wangq***@qq.com",
-    date: "2024-12-15",
-    rating: 4,
-    text: "质量不错，价格合理，客服服务也很好，推荐购买。",
-  },
-];
+export type SeedReview = {
+  name: string;
+  email: string;
+  date: string;
+  rating: number;
+  text: string;
+  reply?: {
+    date: string;
+    text: string;
+  };
+};
+
+export const reviews: SeedReview[] = [];
+// export const reviews = [
+//   {
+//     name: "张伟",
+//     email: "zhang***@gmail.com",
+//     date: "2024-12-20",
+//     rating: 5,
+//     text: "机箱风扇真的很静音，RGB灯效也非常漂亮，散热效果超出预期！",
+//     reply: {
+//       date: "2024-12-21",
+//       text: "感谢您的好评！我们很高兴您喜欢这款产品。如有任何问题，欢迎随时联系我们的客服团队。",
+//     },
+//   },
+//   {
+//     name: "李娜",
+//     email: "lina***@163.com",
+//     date: "2024-12-18",
+//     rating: 5,
+//     text: "CPU散热器性能强大，安装也很方便，温度降了10度，非常满意！",
+//   },
+//   {
+//     name: "王强",
+//     email: "wangq***@qq.com",
+//     date: "2024-12-15",
+//     rating: 4,
+//     text: "质量不错，价格合理，客服服务也很好，推荐购买。",
+//   },
+// ];
 
 export const faqs = [
   {

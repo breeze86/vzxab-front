@@ -58,7 +58,7 @@ export default function Footer() {
             </div>
             <div className="flex gap-2 text-[16px] leading-[24px] text-gray-400">
               <Mail className="h-4 w-4 text-blue-300" aria-hidden="true" />
-              support@coolflow.com
+              support@vzxab.com
             </div>
             <div className="flex gap-2 text-[16px] leading-[24px] text-gray-400">
               <MapPin className="h-4 w-4 text-blue-300" aria-hidden="true" />
@@ -67,7 +67,7 @@ export default function Footer() {
           </div>
         </div>
         <div className="mt-8 flex flex-col gap-3 border-t border-[#1e2939] pt-4 text-[14px] text-gray-400 sm:flex-row sm:items-center sm:justify-between">
-          <span>© 2025 CoolFlow. All rights reserved.</span>
+          <span>© 2025 VZXAB. All rights reserved.</span>
           <div className="flex gap-6">
             <span>隐私政策</span>
             <span>使用条款</span>

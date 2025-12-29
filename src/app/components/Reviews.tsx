@@ -359,17 +359,7 @@ export default function Reviews() {
                   退出
                 </button>
               </div>
-            ) : (
-              <button
-                className="inline-flex items-center gap-2 rounded-pill bg-gray-100 px-4 py-1 text-[14px] leading-[20px] text-gray-900 transition hover:bg-gray-200"
-                type="button"
-                onClick={() => setIsAdminOpen(true)}
-                aria-label="管理员登录"
-              >
-                <BadgeCheck className="h-4 w-4 text-blue-600" aria-hidden="true" />
-                管理员
-              </button>
-            )}
+            ) : null}
           </div>
           <div className="mt-3 flex items-center justify-center gap-2">
             {Array.from({ length: 5 }).map((_, index) => {
