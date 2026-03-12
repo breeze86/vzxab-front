@@ -38,9 +38,9 @@ export default function Products() {
                 <p className="mt-2 text-[16px] leading-[24px] text-gray-600">
                   {product.desc}
                 </p>
-                <div className="mt-3 text-[30px] font-semibold text-blue-600">
+                {/* <div className="mt-3 text-[30px] font-semibold text-blue-600">
                   {product.price}
-                </div>
+                </div> */}
                 <div className="mt-5 grid gap-3">
                   {product.specs.map(([label, value]) => (
                     <div
@@ -69,7 +69,7 @@ export default function Products() {
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  立即购买
+                  更多
                 </a>
               </div>
             </article>

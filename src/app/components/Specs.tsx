@@ -23,9 +23,9 @@ export default function Specs() {
             ))}
           </div>
         </div>
-        <button className="mx-auto mt-12 block w-[176px] rounded-pill bg-blue-600 py-3 text-[16px] font-semibold text-white">
+        {/* <button className="mx-auto mt-12 block w-[176px] rounded-pill bg-blue-600 py-3 text-[16px] font-semibold text-white">
           下载完整规格书
-        </button>
+        </button> */}
       </div>
     </section>
   );
