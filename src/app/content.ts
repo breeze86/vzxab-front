@@ -70,7 +70,7 @@ export const heroBannersFallback: HeroBannerItem[] = [
 export const products = [
   {
     tag: "机箱风扇",
-    name: "CoolFlow Case 120",
+    name: "VZXAB Case Fan 1",
     desc: "高性能机箱散热风扇，提供强劲风量与静音表现的完美平衡",
     price: "¥199",
     buyLink:
@@ -86,7 +86,7 @@ export const products = [
   },
   {
     tag: "CPU散热器",
-    name: "CoolFlow CPU Tower",
+    name: "VZXAB CPU Fan 1",
     desc: "塔式CPU散热器，6热管直触设计，轻松压制高性能处理器",
     price: "¥399",
     buyLink:
