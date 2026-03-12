@@ -25,6 +25,48 @@ export const features = [
   },
 ];
 
+export type HeroBannerItem = {
+  id: string;
+  title: string;
+  summary: string;
+  mediaType: "image" | "video";
+  videoPlayMode?: "hover" | "auto";
+  imageUrl?: string;
+  videoUrl?: string;
+  videoPosterUrl?: string;
+  linkUrl: string;
+};
+
+export const heroBannersFallback: HeroBannerItem[] = [
+  {
+    id: "hero-1",
+    title: "机箱风扇·CPU散热器",
+    summary:
+      "专注打造高性能机箱风扇和CPU散热器，采用先进液态轴承技术与智能温控系统。",
+    mediaType: "image",
+    imageUrl: "/assets/images/hero-cooling-fan.jpg",
+    linkUrl: "https://www.amazon.com/s?me=A3A15XG0VENWMN&marketplaceID=ATVPDKIKX0DER",
+  },
+  {
+    id: "hero-2",
+    title: "静音高效散热·CPU散热器·即将上架",
+    summary: "在高风量场景下保持低噪运行，兼顾性能与稳定。",
+    mediaType: "image",
+    imageUrl: "/assets/images/products-fan.jpg",
+    linkUrl: "https://www.amazon.com/Cooler-Cooling-Lighting-Dynamic-Multi-Graph/dp/B0D7BKQX44/ref=sr_1_2?dib=eyJ2IjoiMSJ9.LqPcA_t_BSZjabQFNgd3jypoutw3W3eRAk_in2sK-MbGjHj071QN20LucGBJIEps.ppY3w7k4Iau7rig1jzgR0OuQKbeqkVJgRFpSBcXSVos&dib_tag=se&m=A3A15XG0VENWMN&marketplaceID=ATVPDKIKX0DER&nsdOptOutParam=true&qid=1773311084&s=merchant-items&sr=1-2&th=1",
+  },
+  {
+    id: "hero-3",
+    title: "智能温控体验·即将上架",
+    summary: "支持视频位配置与封面展示，后续可直接接入营销素材。",
+    mediaType: "video",
+    videoUrl: "https://videos.pexels.com/video-files/3147349/3147349-sd_640_360_25fps.mp4",
+    videoPlayMode: "auto",
+    videoPosterUrl: "https://images.pexels.com/videos/3147349/free-video-3147349.jpg?auto=compress&cs=tinysrgb&dpr=1&w=500",
+    linkUrl: "https://www.amazon.com/Cooler-Cooling-Lighting-Dynamic-Multi-Graph/dp/B0FQHV7CWC/ref=sr_1_3?dib=eyJ2IjoiMSJ9.LqPcA_t_BSZjabQFNgd3jypoutw3W3eRAk_in2sK-MbGjHj071QN20LucGBJIEps.ppY3w7k4Iau7rig1jzgR0OuQKbeqkVJgRFpSBcXSVos&dib_tag=se&m=A3A15XG0VENWMN&marketplaceID=ATVPDKIKX0DER&nsdOptOutParam=true&qid=1773311084&s=merchant-items&sr=1-3&th=1",
+  },
+];
+
 export const products = [
   {
     tag: "机箱风扇",
@@ -34,10 +76,10 @@ export const products = [
     buyLink:
       "https://www.amazon.com/Cooler-Cooling-Lighting-Dynamic-Multi-Graph/dp/B0FQHV7CWC/ref=sr_1_2?dib=eyJ2IjoiMSJ9.AL-TedRXzren6xUvXq-55UyyDJHjLaj8aW6tqZqtOJ7GjHj071QN20LucGBJIEps.qi9kH1HqI3RObu5FnEme4nAUtvpWMVQCNQH2z45M2gc&dib_tag=se&m=A3A15XG0VENWMN&marketplaceID=ATVPDKIKX0DER&nsdOptOutParam=true&qid=1766919428&s=merchant-items&sr=1-2",
     specs: [
-      ["尺寸", "120mm x 25mm"],
-      ["转速", "800-2000 RPM"],
-      ["噪音", "18-22 dB"],
-      ["风量", "120 CFM"],
+      ["尺寸范围", "120mm - 140mm"],
+      ["转速", "800 - 2000 RPM"],
+      ["噪音", "18 - 22 dB"],
+      ["风量", "80 - 120 CFM"],
     ],
     features: ["PWM 智能调速", "RGB 灯效", "液态轴承", "防震设计"],
     image: "/assets/images/products-fan.jpg"
@@ -50,10 +92,10 @@ export const products = [
     buyLink:
       "https://www.amazon.com/Cooler-Cooling-Lighting-Dynamic-Multi-Graph/dp/B0D7BKQX44/ref=sr_1_3?dib=eyJ2IjoiMSJ9.AL-TedRXzren6xUvXq-55UyyDJHjLaj8aW6tqZqtOJ7GjHj071QN20LucGBJIEps.qi9kH1HqI3RObu5FnEme4nAUtvpWMVQCNQH2z45M2gc&dib_tag=se&m=A3A15XG0VENWMN&marketplaceID=ATVPDKIKX0DER&nsdOptOutParam=true&qid=1766919428&s=merchant-items&sr=1-3",
     specs: [
-      ["尺寸", "125mm x 158mm x 73mm"],
-      ["转速", "600-1800 RPM"],
-      ["噪音", "16-24 dB"],
-      ["风量", "95 CFM"],
+      ["尺寸范围", "125mm - 158mm"],
+      ["转速", "600 - 1800 RPM"],
+      ["噪音", "16 - 24 dB"],
+      ["风量", "70 - 95 CFM"],
     ],
     features: ["6根纯铜热管", "铝制鳍片", "一体式扣具", "多平台兼容"],
     image: "/assets/images/products-cpu-fan.jpg"

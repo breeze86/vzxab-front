@@ -9,9 +9,9 @@ import Support from "./components/Support";
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-white" id="top">
+    <div className="isolate min-h-screen bg-white" id="top">
       <Header />
-      <main className="overflow-x-hidden">
+      <main className="relative z-0 overflow-x-hidden pt-16">
         <Hero />
         <Features />
         <Products />
