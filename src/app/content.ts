@@ -39,31 +39,13 @@ export type HeroBannerItem = {
 
 export const heroBannersFallback: HeroBannerItem[] = [
   {
-    id: "hero-1",
-    title: "机箱风扇·CPU散热器",
+    id: "hero-fallback",
+    title: "VZXAB 高性能散热方案",
     summary:
-      "专注打造高性能机箱风扇和CPU散热器，采用先进液态轴承技术与智能温控系统。",
+      "精选机箱风扇与 CPU 散热器正在同步更新中，当前为默认展示内容。您可以先进入 VZXAB 品牌店铺查看已上架产品与最新动态。",
     mediaType: "image",
-    imageUrl: "/assets/images/hero-cooling-fan.jpg",
+    imageUrl: "/assets/images/hero-placeholder-banner.svg",
     linkUrl: "https://www.amazon.com/s?me=A3A15XG0VENWMN&marketplaceID=ATVPDKIKX0DER",
-  },
-  {
-    id: "hero-2",
-    title: "静音高效散热·CPU散热器·即将上架",
-    summary: "在高风量场景下保持低噪运行，兼顾性能与稳定。",
-    mediaType: "image",
-    imageUrl: "/assets/images/products-fan.jpg",
-    linkUrl: "https://www.amazon.com/Cooler-Cooling-Lighting-Dynamic-Multi-Graph/dp/B0D7BKQX44/ref=sr_1_2?dib=eyJ2IjoiMSJ9.LqPcA_t_BSZjabQFNgd3jypoutw3W3eRAk_in2sK-MbGjHj071QN20LucGBJIEps.ppY3w7k4Iau7rig1jzgR0OuQKbeqkVJgRFpSBcXSVos&dib_tag=se&m=A3A15XG0VENWMN&marketplaceID=ATVPDKIKX0DER&nsdOptOutParam=true&qid=1773311084&s=merchant-items&sr=1-2&th=1",
-  },
-  {
-    id: "hero-3",
-    title: "智能温控体验·即将上架",
-    summary: "支持视频位配置与封面展示，后续可直接接入营销素材。",
-    mediaType: "video",
-    videoUrl: "https://videos.pexels.com/video-files/3147349/3147349-sd_640_360_25fps.mp4",
-    videoPlayMode: "auto",
-    videoPosterUrl: "https://images.pexels.com/videos/3147349/free-video-3147349.jpg?auto=compress&cs=tinysrgb&dpr=1&w=500",
-    linkUrl: "https://www.amazon.com/Cooler-Cooling-Lighting-Dynamic-Multi-Graph/dp/B0FQHV7CWC/ref=sr_1_3?dib=eyJ2IjoiMSJ9.LqPcA_t_BSZjabQFNgd3jypoutw3W3eRAk_in2sK-MbGjHj071QN20LucGBJIEps.ppY3w7k4Iau7rig1jzgR0OuQKbeqkVJgRFpSBcXSVos&dib_tag=se&m=A3A15XG0VENWMN&marketplaceID=ATVPDKIKX0DER&nsdOptOutParam=true&qid=1773311084&s=merchant-items&sr=1-3&th=1",
   },
 ];
 
