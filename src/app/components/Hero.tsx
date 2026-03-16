@@ -46,7 +46,8 @@ const isValidBanner = (item: Partial<ApiHeroBannerItem>) => {
 };
 
 export default function Hero() {
-  const [banners, setBanners] = useState<HeroBannerItem[]>(heroBannersFallback);
+  const [banners, setBanners] = useState<HeroBannerItem[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [previousIndex, setPreviousIndex] = useState<number | null>(null);
   const [slideDirection, setSlideDirection] = useState<SlideDirection>("next");
@@ -56,30 +57,36 @@ export default function Hero() {
   const [capturedVideoPosters, setCapturedVideoPosters] = useState<Record<number, string>>({});
   const videoRefs = useRef<Array<HTMLVideoElement | null>>([]);
 
+  const syncBanners = (nextBanners: HeroBannerItem[]) => {
+    setBanners(nextBanners);
+    setCurrentIndex(0);
+    setPreviousIndex(null);
+    setIsSlideActive(false);
+    setVisibleVideos({});
+    setCapturedVideoPosters({});
+  };
+
   useEffect(() => {
     const fetchHeroBanners = async () => {
       try {
         const response = await fetch("/api/hero-banners", { cache: "no-store" });
         if (!response.ok) {
+          syncBanners(heroBannersFallback);
           return;
         }
         const data: ApiHeroBannerItem[] = await response.json();
         if (!Array.isArray(data)) {
+          syncBanners(heroBannersFallback);
           return;
         }
         const normalized = data
           .filter((item) => isValidBanner(item))
           .map((item) => normalizeBanner(item));
-        if (normalized.length) {
-          setBanners(normalized);
-          setCurrentIndex(0);
-          setPreviousIndex(null);
-          setIsSlideActive(false);
-          setVisibleVideos({});
-          setCapturedVideoPosters({});
-        }
+        syncBanners(normalized.length ? normalized : heroBannersFallback);
       } catch {
-        // Keep fallback data when API is unavailable.
+        syncBanners(heroBannersFallback);
+      } finally {
+        setIsLoading(false);
       }
     };
 
@@ -280,6 +287,37 @@ export default function Hero() {
       opacity: 1,
     };
   };
+
+  if (isLoading) {
+    return (
+      <section className="relative overflow-hidden bg-gradient-to-br from-blue-50 to-indigo-100 py-14 lg:py-20">
+        <div className="mx-auto max-w-page px-4 sm:px-6 lg:px-8">
+          <div className="relative overflow-hidden rounded-[28px] border border-blue-100 bg-white shadow-soft">
+            <div className="relative h-[420px] w-full overflow-hidden sm:h-[500px] lg:h-[560px]">
+              <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_rgba(96,165,250,0.22),_transparent_34%),linear-gradient(135deg,_#08101c,_#102341_58%,_#0a1320)]" />
+              <div className="absolute -right-10 top-1/2 h-[240px] w-[240px] -translate-y-1/2 rounded-full border border-white/10 bg-white/5 blur-[1px]" />
+              <div className="absolute -right-2 top-1/2 h-[168px] w-[168px] -translate-y-1/2 rounded-full border border-white/10 bg-slate-950/60" />
+              <div className="absolute left-0 top-0 flex h-full w-full items-end p-6 sm:p-10 lg:p-14">
+                <div className="w-full max-w-[620px] animate-pulse">
+                  <div className="h-4 w-28 rounded-full bg-white/20" />
+                  <div className="mt-6 h-12 w-full max-w-[520px] rounded-2xl bg-white/16 sm:h-14" />
+                  <div className="mt-4 h-12 w-full max-w-[460px] rounded-2xl bg-white/12 sm:h-14" />
+                  <div className="mt-6 h-5 w-full max-w-[560px] rounded-full bg-white/14" />
+                  <div className="mt-3 h-5 w-full max-w-[480px] rounded-full bg-white/10" />
+                  <div className="mt-8 h-12 w-36 rounded-pill bg-blue-500/60" />
+                </div>
+              </div>
+              <div className="absolute bottom-6 left-1/2 flex -translate-x-1/2 items-center gap-2 rounded-pill bg-black/25 px-4 py-2 backdrop-blur sm:bottom-8 lg:bottom-10">
+                <span className="h-2.5 w-8 rounded-full bg-white/90" />
+                <span className="h-2.5 w-2.5 rounded-full bg-white/45" />
+                <span className="h-2.5 w-2.5 rounded-full bg-white/45" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section className="relative overflow-hidden bg-gradient-to-br from-blue-50 to-indigo-100 py-14 lg:py-20">
