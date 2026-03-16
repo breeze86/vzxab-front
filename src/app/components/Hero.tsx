@@ -333,7 +333,7 @@ export default function Hero() {
                         muted
                         loop
                         playsInline
-                        preload="metadata"
+                        preload={isCurrent && index === 0 ? "auto" : "metadata"}
                         crossOrigin="anonymous"
                         onLoadedData={() => tryCaptureVideoPoster(index)}
                         onPlaying={() => setVideoVisibility(index, true)}
@@ -349,6 +349,9 @@ export default function Hero() {
                             isVideoVisible ? "scale-[1.02] opacity-0" : "scale-100 opacity-100"
                           }`}
                           sizes="100vw"
+                          priority={isCurrent && index === 0}
+                          loading={isCurrent && index === 0 ? "eager" : "lazy"}
+                          fetchPriority={isCurrent && index === 0 ? "high" : "auto"}
                         />
                       ) : (
                         <div
@@ -365,6 +368,9 @@ export default function Hero() {
                       fill
                       className="object-cover"
                       sizes="100vw"
+                      priority={isCurrent && index === 0}
+                      loading={isCurrent && index === 0 ? "eager" : "lazy"}
+                      fetchPriority={isCurrent && index === 0 ? "high" : "auto"}
                     />
                   )}
 
