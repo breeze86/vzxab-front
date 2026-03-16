@@ -44,7 +44,7 @@ export const heroBannersFallback: HeroBannerItem[] = [
     summary:
       "精选机箱风扇与 CPU 散热器正在同步更新中，当前为默认展示内容。您可以先进入 VZXAB 品牌店铺查看已上架产品与最新动态。",
     mediaType: "image",
-    imageUrl: "/assets/images/hero-placeholder-banner.svg",
+    imageUrl: "/assets/images/hero-placeholder-banner.webp",
     linkUrl: "https://www.amazon.com/s?me=A3A15XG0VENWMN&marketplaceID=ATVPDKIKX0DER",
   },
 ];
