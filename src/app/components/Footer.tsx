@@ -1,7 +1,57 @@
-import Image from "next/image";
+"use client";
+
 import { Mail, MapPin, Phone } from "lucide-react";
+import { useEffect, useState } from "react";
+
+type CompanyProfile = {
+  phone: string;
+  email: string;
+  address: string;
+};
+
+const emptyProfile: CompanyProfile = {
+  phone: "",
+  email: "",
+  address: "",
+};
+
+function ContactValue({ value, isLoading }: { value: string; isLoading: boolean }) {
+  if (isLoading) {
+    return <span className="mt-1 block h-4 w-36 animate-pulse rounded-full bg-gray-700" />;
+  }
+
+  return <span>{value || "暂未配置"}</span>;
+}
 
 export default function Footer() {
+  const [profile, setProfile] = useState<CompanyProfile>(emptyProfile);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const response = await fetch("/api/company-profile", { cache: "no-store" });
+        if (!response.ok) {
+          setProfile(emptyProfile);
+          return;
+        }
+
+        const data = (await response.json()) as Partial<CompanyProfile>;
+        setProfile({
+          phone: data.phone ?? "",
+          email: data.email ?? "",
+          address: data.address ?? "",
+        });
+      } catch {
+        setProfile(emptyProfile);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchProfile();
+  }, []);
+
   return (
     <footer className="bg-gray-800 py-12 text-white">
       <div className="mx-auto max-w-page px-6">
@@ -24,24 +74,18 @@ export default function Footer() {
             <a className="block text-[16px] leading-[24px] text-gray-400" href="#products">
               CPU散热器
             </a>
-            <a className="block text-[16px] leading-[24px] text-gray-400" href="#products">
-              配件耗材
-            </a>
-            <a className="block text-[16px] leading-[24px] text-gray-400" href="#support">
-              定制方案
-            </a>
           </div>
           <div>
             <div className="mb-3 font-heading text-[18px] font-semibold">
               客户支持
             </div>
-            <a className="block text-[16px] leading-[24px] text-gray-400" href="#support">
+            <a className="block text-[16px] leading-[24px] text-gray-400" href="#download-center">
               安装指南
             </a>
             <a className="block text-[16px] leading-[24px] text-gray-400" href="#support">
               常见问题
             </a>
-            <a className="block text-[16px] leading-[24px] text-gray-400" href="#support">
+            <a className="block text-[16px] leading-[24px] text-gray-400" href="#warranty-policy">
               保修政策
             </a>
             <a className="block text-[16px] leading-[24px] text-gray-400" href="#support">
@@ -53,16 +97,16 @@ export default function Footer() {
               联系方式
             </div>
             <div className="flex gap-2 text-[16px] leading-[24px] text-gray-400">
-              <Phone className="h-4 w-4 text-blue-300" aria-hidden="true" />
-              400-888-8888
+              <Phone className="mt-1 h-4 w-4 shrink-0 text-blue-300" aria-hidden="true" />
+              <ContactValue value={profile.phone} isLoading={isLoading} />
             </div>
             <div className="flex gap-2 text-[16px] leading-[24px] text-gray-400">
-              <Mail className="h-4 w-4 text-blue-300" aria-hidden="true" />
-              support@vzxab.com
+              <Mail className="mt-1 h-4 w-4 shrink-0 text-blue-300" aria-hidden="true" />
+              <ContactValue value={profile.email} isLoading={isLoading} />
             </div>
             <div className="flex gap-2 text-[16px] leading-[24px] text-gray-400">
-              <MapPin className="h-4 w-4 text-blue-300" aria-hidden="true" />
-              中国深圳市南山区科技园
+              <MapPin className="mt-1 h-4 w-4 shrink-0 text-blue-300" aria-hidden="true" />
+              <ContactValue value={profile.address} isLoading={isLoading} />
             </div>
           </div>
         </div>

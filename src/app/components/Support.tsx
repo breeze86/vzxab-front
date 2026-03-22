@@ -1,11 +1,24 @@
 "use client";
 
 import { ArrowDown, CircleHelp, Download, FileText, Headset, Send } from "lucide-react";
-import { useState } from "react";
-import { downloads, faqs } from "../content";
+import { useEffect, useState } from "react";
+import { faqs } from "../content";
+
+type DownloadCenterItem = {
+  id: number;
+  name: string;
+  fileUrl: string;
+  actionType: "preview" | "download";
+  fileType: string;
+  fileSize: string;
+};
+
+const downloadSkeletonRows = Array.from({ length: 3 });
 
 export default function Support() {
   const [openFaqId, setOpenFaqId] = useState<number | null>(null);
+  const [downloadItems, setDownloadItems] = useState<DownloadCenterItem[]>([]);
+  const [isDownloadsLoading, setIsDownloadsLoading] = useState(true);
   const [formState, setFormState] = useState({
     name: "",
     email: "",
@@ -31,6 +44,32 @@ export default function Support() {
     isContactNameInvalid ||
     isContactEmailInvalid ||
     formState.message.length > messageMaxChars;
+
+  useEffect(() => {
+    const fetchDownloadItems = async () => {
+      try {
+        const response = await fetch("/api/download-center", { cache: "no-store" });
+        if (!response.ok) {
+          setDownloadItems([]);
+          return;
+        }
+
+        const data: DownloadCenterItem[] = await response.json();
+        if (!Array.isArray(data)) {
+          setDownloadItems([]);
+          return;
+        }
+
+        setDownloadItems(data);
+      } catch {
+        setDownloadItems([]);
+      } finally {
+        setIsDownloadsLoading(false);
+      }
+    };
+
+    fetchDownloadItems();
+  }, []);
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -110,32 +149,67 @@ export default function Support() {
               })}
             </div>
 
-            <div className="mt-8">
+            <div id="download-center" className="mt-8 scroll-mt-24">
               <div className="mb-4 flex items-center gap-3">
                 <Download className="h-7 w-7 text-blue-600" aria-hidden="true" />
                 <h4 className="text-[24px] font-semibold text-gray-900">下载中心</h4>
               </div>
               <div className="flex flex-col gap-3">
-                {downloads.map(([title, size]) => (
-                  <div
-                    className="flex items-center justify-between rounded-[14px] border border-gray-200 bg-white px-4 py-4"
-                    key={title}
-                  >
-                    <div className="flex items-center gap-4">
-                      <div className="grid h-12 w-12 place-items-center rounded-[10px] bg-blue-100">
-                        <FileText className="h-6 w-6 text-blue-600" aria-hidden="true" />
+                {isDownloadsLoading
+                  ? downloadSkeletonRows.map((_, index) => (
+                      <div
+                        className="flex items-center justify-between rounded-[14px] border border-gray-200 bg-white px-4 py-4"
+                        key={`download-skeleton-${index}`}
+                      >
+                        <div className="flex items-center gap-4">
+                          <div className="grid h-12 w-12 place-items-center rounded-[10px] bg-blue-100">
+                            <FileText className="h-6 w-6 text-blue-300" aria-hidden="true" />
+                          </div>
+                          <div className="animate-pulse">
+                            <div className="h-4 w-48 rounded-full bg-gray-200" />
+                            <div className="mt-2 h-3 w-24 rounded-full bg-gray-100" />
+                          </div>
+                        </div>
+                        <div className="h-10 w-[92px] rounded-[10px] bg-blue-100 animate-pulse" />
                       </div>
-                      <div>
-                        <div className="font-semibold text-gray-900">{title}</div>
-                        <div className="text-[14px] text-gray-500">{size}</div>
+                    ))
+                  : null}
+
+                {!isDownloadsLoading && downloadItems.length > 0
+                  ? downloadItems.map((item) => (
+                      <div
+                        className="flex items-center justify-between rounded-[14px] border border-gray-200 bg-white px-4 py-4"
+                        key={item.id}
+                      >
+                        <div className="flex items-center gap-4">
+                          <div className="grid h-12 w-12 place-items-center rounded-[10px] bg-blue-100">
+                            <FileText className="h-6 w-6 text-blue-600" aria-hidden="true" />
+                          </div>
+                          <div>
+                            <div className="font-semibold text-gray-900">{item.name}</div>
+                            <div className="text-[14px] text-gray-500">
+                              {item.fileType} · {item.fileSize}
+                            </div>
+                          </div>
+                        </div>
+                        <a
+                          className="inline-flex items-center gap-2 rounded-[10px] bg-blue-600 px-4 py-2 text-[16px] text-white"
+                          href={item.fileUrl}
+                          target={item.actionType === "preview" ? "_blank" : undefined}
+                          rel={item.actionType === "preview" ? "noopener noreferrer" : undefined}
+                        >
+                          <ArrowDown className="h-4 w-4" aria-hidden="true" />
+                          下载
+                        </a>
                       </div>
-                    </div>
-                    <button className="inline-flex items-center gap-2 rounded-[10px] bg-blue-600 px-4 py-2 text-[16px] text-white">
-                      <ArrowDown className="h-4 w-4" aria-hidden="true" />
-                      下载
-                    </button>
+                    ))
+                  : null}
+
+                {!isDownloadsLoading && downloadItems.length === 0 ? (
+                  <div className="rounded-[14px] border border-dashed border-gray-200 bg-white px-6 py-8 text-center text-[15px] text-gray-500">
+                    暂无下载资料
                   </div>
-                ))}
+                ) : null}
               </div>
             </div>
           </div>
@@ -253,15 +327,15 @@ export default function Support() {
               </form>
             </div>
 
-            <div className="mt-8 rounded-xl border border-[#bedbff] bg-[linear-gradient(160deg,#eff6ff,#eef2ff)] p-[25px]">
+            <div id="warranty-policy" className="mt-8 scroll-mt-24 rounded-xl border border-[#bedbff] bg-[linear-gradient(160deg,#eff6ff,#eef2ff)] p-[25px]">
               <h4 className="mb-3 text-[18px] font-semibold text-gray-900">
                 保修政策
               </h4>
               <div className="grid gap-2 text-[14px] text-gray-700">
-                <span>• 所有产品享有2年质保服务</span>
-                <span>• 7天无理由退货（未使用）</span>
-                <span>• 30天内质量问题免费换货</span>
-                <span>• 终身技术支持服务</span>
+                <span>• 所有产品享受 2 年质保服务</span>
+                <span>• 30 天无理由退换货</span>
+                <span>• 专业技术支持团队</span>
+                <span>• 全国联保服务网络</span>
               </div>
             </div>
           </div>
