@@ -2,7 +2,12 @@
 
 import { ArrowDown, CircleHelp, Download, FileText, Headset, Send } from "lucide-react";
 import { useEffect, useState } from "react";
-import { faqs } from "../content";
+
+type FaqItem = {
+  id: number;
+  question: string;
+  answer: string;
+};
 
 type DownloadCenterItem = {
   id: number;
@@ -13,10 +18,13 @@ type DownloadCenterItem = {
   fileSize: string;
 };
 
+const faqSkeletonRows = Array.from({ length: 4 });
 const downloadSkeletonRows = Array.from({ length: 3 });
 
 export default function Support() {
   const [openFaqId, setOpenFaqId] = useState<number | null>(null);
+  const [faqItems, setFaqItems] = useState<FaqItem[]>([]);
+  const [isFaqsLoading, setIsFaqsLoading] = useState(true);
   const [downloadItems, setDownloadItems] = useState<DownloadCenterItem[]>([]);
   const [isDownloadsLoading, setIsDownloadsLoading] = useState(true);
   const [formState, setFormState] = useState({
@@ -46,6 +54,28 @@ export default function Support() {
     formState.message.length > messageMaxChars;
 
   useEffect(() => {
+    const fetchFaqItems = async () => {
+      try {
+        const response = await fetch("/api/faqs", { cache: "no-store" });
+        if (!response.ok) {
+          setFaqItems([]);
+          return;
+        }
+
+        const data: FaqItem[] = await response.json();
+        if (!Array.isArray(data)) {
+          setFaqItems([]);
+          return;
+        }
+
+        setFaqItems(data);
+      } catch {
+        setFaqItems([]);
+      } finally {
+        setIsFaqsLoading(false);
+      }
+    };
+
     const fetchDownloadItems = async () => {
       try {
         const response = await fetch("/api/download-center", { cache: "no-store" });
@@ -68,6 +98,7 @@ export default function Support() {
       }
     };
 
+    fetchFaqItems();
     fetchDownloadItems();
   }, []);
 
@@ -119,34 +150,56 @@ export default function Support() {
               </h3>
             </div>
             <div className="flex flex-col gap-4">
-              {faqs.map((item) => {
-                const isOpen = item.id === openFaqId;
-                return (
-                  <button
-                    className="flex w-full flex-col gap-3 rounded-[24px] border border-gray-200 bg-white px-6 py-6 text-left font-semibold"
-                    key={item.id}
-                    onClick={() => setOpenFaqId(isOpen ? null : item.id)}
-                    type="button"
-                    aria-expanded={isOpen}
-                  >
+              {isFaqsLoading
+                ? faqSkeletonRows.map((_, index) => (
                     <div
-                      className={`flex items-center justify-between ${
-                        isOpen ? "border-b border-gray-200 pb-4" : ""
-                      }`}
+                      className="rounded-[24px] border border-gray-200 bg-white px-6 py-6"
+                      key={`faq-skeleton-${index}`}
                     >
-                      <span className="font-semibold pr-4">{item.question}</span>
-                      <span className="text-2xl text-blue-600">
-                        {isOpen ? "−" : "+"}
-                      </span>
+                      <div className="flex items-center justify-between gap-4">
+                        <div className="h-7 w-[70%] animate-pulse rounded-full bg-gray-200" />
+                        <div className="h-7 w-7 animate-pulse rounded-full bg-blue-100" />
+                      </div>
                     </div>
-                    {isOpen ? (
-                      <p className="text-[14px] leading-[28px] text-gray-600">
-                        {item.answer}
-                      </p>
-                    ) : null}
-                  </button>
-                );
-              })}
+                  ))
+                : null}
+
+              {!isFaqsLoading && faqItems.length > 0
+                ? faqItems.map((item) => {
+                    const isOpen = item.id === openFaqId;
+                    return (
+                      <button
+                        className="flex w-full flex-col gap-3 rounded-[24px] border border-gray-200 bg-white px-6 py-6 text-left font-semibold"
+                        key={item.id}
+                        onClick={() => setOpenFaqId(isOpen ? null : item.id)}
+                        type="button"
+                        aria-expanded={isOpen}
+                      >
+                        <div
+                          className={`flex items-center justify-between ${
+                            isOpen ? "border-b border-gray-200 pb-4" : ""
+                          }`}
+                        >
+                          <span className="font-semibold pr-4">{item.question}</span>
+                          <span className="text-2xl text-blue-600">
+                            {isOpen ? "−" : "+"}
+                          </span>
+                        </div>
+                        {isOpen ? (
+                          <p className="text-[14px] leading-[28px] text-gray-600">
+                            {item.answer}
+                          </p>
+                        ) : null}
+                      </button>
+                    );
+                  })
+                : null}
+
+              {!isFaqsLoading && faqItems.length === 0 ? (
+                <div className="rounded-[24px] border border-dashed border-gray-200 bg-white px-6 py-8 text-center text-[15px] text-gray-500">
+                  暂无常见问题内容
+                </div>
+              ) : null}
             </div>
 
             <div id="download-center" className="mt-8 scroll-mt-24">

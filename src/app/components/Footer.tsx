@@ -2,6 +2,7 @@
 
 import { Mail, MapPin, Phone } from "lucide-react";
 import { useEffect, useState } from "react";
+import { scrollToSection } from "@/lib/scroll";
 
 type CompanyProfile = {
   phone: string;
@@ -14,6 +15,18 @@ const emptyProfile: CompanyProfile = {
   email: "",
   address: "",
 };
+
+const productLinks = [
+  { label: "机箱风扇", targetId: "products" },
+  { label: "CPU散热器", targetId: "products" },
+];
+
+const supportLinks = [
+  { label: "安装指南", targetId: "download-center" },
+  { label: "常见问题", targetId: "support" },
+  { label: "保修政策", targetId: "warranty-policy" },
+  { label: "联系我们", targetId: "support" },
+];
 
 function ContactValue({ value, isLoading }: { value: string; isLoading: boolean }) {
   if (isLoading) {
@@ -52,6 +65,11 @@ export default function Footer() {
     fetchProfile();
   }, []);
 
+  const handleNavigate = (targetId: string) => (event: React.MouseEvent<HTMLAnchorElement>) => {
+    event.preventDefault();
+    scrollToSection(targetId);
+  };
+
   return (
     <footer className="bg-gray-800 py-12 text-white">
       <div className="mx-auto max-w-page px-6">
@@ -68,29 +86,31 @@ export default function Footer() {
             <div className="mb-3 font-heading text-[18px] font-semibold">
               产品系列
             </div>
-            <a className="block text-[16px] leading-[24px] text-gray-400" href="#products">
-              机箱风扇
-            </a>
-            <a className="block text-[16px] leading-[24px] text-gray-400" href="#products">
-              CPU散热器
-            </a>
+            {productLinks.map((item) => (
+              <a
+                key={item.label}
+                className="block text-[16px] leading-[24px] text-gray-400"
+                href={`#${item.targetId}`}
+                onClick={handleNavigate(item.targetId)}
+              >
+                {item.label}
+              </a>
+            ))}
           </div>
           <div>
             <div className="mb-3 font-heading text-[18px] font-semibold">
               客户支持
             </div>
-            <a className="block text-[16px] leading-[24px] text-gray-400" href="#download-center">
-              安装指南
-            </a>
-            <a className="block text-[16px] leading-[24px] text-gray-400" href="#support">
-              常见问题
-            </a>
-            <a className="block text-[16px] leading-[24px] text-gray-400" href="#warranty-policy">
-              保修政策
-            </a>
-            <a className="block text-[16px] leading-[24px] text-gray-400" href="#support">
-              联系我们
-            </a>
+            {supportLinks.map((item) => (
+              <a
+                key={item.label}
+                className="block text-[16px] leading-[24px] text-gray-400"
+                href={`#${item.targetId}`}
+                onClick={handleNavigate(item.targetId)}
+              >
+                {item.label}
+              </a>
+            ))}
           </div>
           <div>
             <div className="mb-3 font-heading text-[18px] font-semibold">

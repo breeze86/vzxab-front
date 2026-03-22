@@ -1,6 +1,22 @@
+"use client";
+
 import Image from "next/image";
+import { scrollToSection } from "@/lib/scroll";
+
+const navItems = [
+  { label: "产品", targetId: "products" },
+  { label: "特性", targetId: "features" },
+  { label: "规格", targetId: "specs" },
+  { label: "评价", targetId: "reviews" },
+  { label: "支持", targetId: "support" },
+];
 
 export default function Header() {
+  const handleNavigate = (targetId: string) => (event: React.MouseEvent<HTMLAnchorElement>) => {
+    event.preventDefault();
+    scrollToSection(targetId);
+  };
+
   return (
     <header className="fixed inset-x-0 top-0 z-50 border-b border-gray-200 bg-white">
       <div className="mx-auto flex h-16 max-w-page items-center justify-between px-4 sm:px-6 lg:px-8">
@@ -8,6 +24,7 @@ export default function Header() {
           className="flex cursor-pointer items-center hover:opacity-85"
           href="#top"
           aria-label="返回顶部"
+          onClick={handleNavigate("top")}
         >
           <Image
             src="/assets/images/vzxab_logo.png"
@@ -19,14 +36,13 @@ export default function Header() {
           />
         </a>
         <nav className="hidden items-center gap-8 text-[16px] text-gray-700 sm:flex font-semibold">
-          <a href="#products">产品</a>
-          <a href="#features">特性</a>
-          <a href="#specs">规格</a>
-          <a href="#reviews">评价</a>
-          <a href="#support">支持</a>
+          {navItems.map((item) => (
+            <a key={item.targetId} href={`#${item.targetId}`} onClick={handleNavigate(item.targetId)}>
+              {item.label}
+            </a>
+          ))}
         </nav>
-        <div className="flex items-center gap-4">
-        </div>
+        <div className="flex items-center gap-4"></div>
       </div>
     </header>
   );
