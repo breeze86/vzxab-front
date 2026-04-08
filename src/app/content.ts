@@ -58,12 +58,12 @@ export const products = [
     buyLink:
       "https://www.amazon.com/Cooler-Cooling-Lighting-Dynamic-Multi-Graph/dp/B0FQHV7CWC/ref=sr_1_2?dib=eyJ2IjoiMSJ9.AL-TedRXzren6xUvXq-55UyyDJHjLaj8aW6tqZqtOJ7GjHj071QN20LucGBJIEps.qi9kH1HqI3RObu5FnEme4nAUtvpWMVQCNQH2z45M2gc&dib_tag=se&m=A3A15XG0VENWMN&marketplaceID=ATVPDKIKX0DER&nsdOptOutParam=true&qid=1766919428&s=merchant-items&sr=1-2",
     specs: [
-      ["尺寸范围", "120mm - 140mm"],
-      ["转速", "800 - 2000 RPM"],
-      ["噪音", "18 - 22 dB"],
+      ["尺寸", "120mm"],
+      ["转速", "1100 - 2000 RPM ±10%"],
+      ["噪音", "≤35 db"],
       ["风量", "80 - 120 CFM"],
     ],
-    features: ["PWM 智能调速", "RGB 灯效", "液态轴承", "防震设计"],
+    features: ["PWM 智能调速", "RGB 灯效", "液态轴承", "防震设计", "扇叶无线传输供电", "多图形态同步闪灯"],
     image: "/assets/images/products-fan.jpg"
   },
   {
@@ -74,29 +74,29 @@ export const products = [
     buyLink:
       "https://www.amazon.com/Cooler-Cooling-Lighting-Dynamic-Multi-Graph/dp/B0D7BKQX44/ref=sr_1_3?dib=eyJ2IjoiMSJ9.AL-TedRXzren6xUvXq-55UyyDJHjLaj8aW6tqZqtOJ7GjHj071QN20LucGBJIEps.qi9kH1HqI3RObu5FnEme4nAUtvpWMVQCNQH2z45M2gc&dib_tag=se&m=A3A15XG0VENWMN&marketplaceID=ATVPDKIKX0DER&nsdOptOutParam=true&qid=1766919428&s=merchant-items&sr=1-3",
     specs: [
-      ["尺寸范围", "125mm - 158mm"],
-      ["转速", "600 - 1800 RPM"],
-      ["噪音", "16 - 24 dB"],
-      ["风量", "70 - 95 CFM"],
+      ["管数", "6管"],
+      ["转速", "1100 - 2000 RPM ±10%"],
+      ["噪音", "≤35 db"],
+      ["风量", "80 - 120 CFM"],
     ],
-    features: ["6根纯铜热管", "铝制鳍片", "一体式扣具", "多平台兼容"],
+    features: ["6根纯铜热管", "铝制鳍片", "一体式扣具", "多平台兼容", "扇叶无线传输供电", "多图形态同步闪灯"],
     image: "/assets/images/products-cpu-fan.jpg"
   },
 ];
 
 export const specs = [
-  ["尺寸范围", "92mm - 140mm"],
-  ["转速范围", "800 - 2000 RPM"],
+  ["尺寸", "120mm"],
+  ["转速范围", "1100 - 2000 RPM ±10%"],
   ["风量", "最高 120 CFM"],
-  ["噪音水平", "20 - 25 dB(A)"],
+  ["噪音水平", "≤35 db"],
   ["轴承类型", "液态轴承"],
   ["使用寿命", "50,000 小时"],
-  ["供电接口", "4-Pin PWM"],
+  ["供电接口", "SATA、4-Pin PWM"],
   ["额定电压", "12V DC"],
+  ["扇叶供电", "无线传输"],
   ["额定功率", "1.2 - 3.6W"],
-  ["防护等级", "IP55"],
-  ["RGB 灯效", "ARGB 可编程"],
-  ["质保期限", "5 年"],
+  ["RGB 灯效", "多图形态同步闪灯"],
+  ["质保期限", "1 年"],
 ];
 
 export type SeedReview = {
