@@ -385,8 +385,7 @@ export default function Support() {
                 保修政策
               </h4>
               <div className="grid gap-2 text-[14px] text-gray-700">
-                <span>• 所有产品享受 2 年质保服务</span>
-                <span>• 30 天无理由退换货</span>
+                <span>• 所有产品享受 1 年质保服务</span>
                 <span>• 专业技术支持团队</span>
                 <span>• 全国联保服务网络</span>
               </div>

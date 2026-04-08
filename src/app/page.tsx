@@ -13,7 +13,7 @@ export default function Home() {
       <Header />
       <main className="relative z-0 overflow-x-hidden pt-16">
         <Hero />
-        <Features />
+        {/* <Features /> */}
         <Products />
         <Specs />
         <Reviews />

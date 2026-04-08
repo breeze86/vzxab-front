@@ -5,7 +5,7 @@ import { scrollToSection } from "@/lib/scroll";
 
 const navItems = [
   { label: "产品", targetId: "products" },
-  { label: "特性", targetId: "features" },
+  // { label: "特性", targetId: "features" },
   { label: "规格", targetId: "specs" },
   { label: "评价", targetId: "reviews" },
   { label: "支持", targetId: "support" },
