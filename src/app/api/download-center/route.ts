@@ -10,7 +10,9 @@ export async function GET() {
     items.map((item) => ({
       id: item.id,
       name: item.name,
+      nameEn: item.nameEn,
       fileUrl: "/api/download-center/" + item.id + "/file",
+      fileUrlEn: item.downloadUrlEn,
       actionType: item.actionType.toLowerCase(),
       fileType: item.fileType,
       fileSize: item.fileSize,

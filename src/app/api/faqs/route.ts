@@ -11,7 +11,9 @@ export async function GET() {
     items.map((item) => ({
       id: item.id,
       question: item.question,
+      questionEn: item.questionEn,
       answer: item.answer,
+      answerEn: item.answerEn,
     })),
     {
       headers: {

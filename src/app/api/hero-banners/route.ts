@@ -10,13 +10,16 @@ export async function GET() {
   const data = banners.map((item) => ({
     id: String(item.id),
     title: item.title,
+    titleEn: item.titleEn,
     summary: item.summary,
+    summaryEn: item.summaryEn,
     mediaType: item.mediaType === "VIDEO" ? "video" : "image",
     videoPlayMode: item.videoPlayMode === "AUTO" ? "auto" : "hover",
     imageUrl: item.imageUrl,
     videoUrl: item.videoUrl,
     videoPosterUrl: item.videoPosterUrl,
     linkUrl: item.linkUrl,
+    linkUrlEn: item.linkUrlEn,
   }));
 
   return NextResponse.json(data, {

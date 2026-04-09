@@ -7,13 +7,17 @@ import { useTranslation } from "@/app/i18n";
 type FaqItem = {
   id: number;
   question: string;
+  questionEn: string | null;
   answer: string;
+  answerEn: string | null;
 };
 
 type DownloadCenterItem = {
   id: number;
   name: string;
+  nameEn: string | null;
   fileUrl: string;
+  fileUrlEn: string | null;
   actionType: "preview" | "download";
   fileType: string;
   fileSize: string;
@@ -23,7 +27,7 @@ const faqSkeletonRows = Array.from({ length: 4 });
 const downloadSkeletonRows = Array.from({ length: 3 });
 
 export default function Support() {
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
   const [openFaqId, setOpenFaqId] = useState<number | null>(null);
   const [faqItems, setFaqItems] = useState<FaqItem[]>([]);
   const [isFaqsLoading, setIsFaqsLoading] = useState(true);
@@ -72,7 +76,15 @@ export default function Support() {
           return;
         }
 
-        setFaqItems(data);
+        // 根据语言过滤：英文模式下必须 questionEn 和 answerEn 都存在
+        const filtered = data.filter((item) => {
+          if (language === "en") {
+            return item.questionEn?.trim() && item.answerEn?.trim();
+          }
+          return item.question?.trim() && item.answer?.trim();
+        });
+
+        setFaqItems(filtered);
       } catch {
         setFaqItems([]);
       } finally {
@@ -94,7 +106,15 @@ export default function Support() {
           return;
         }
 
-        setDownloadItems(data);
+        // 根据语言过滤：英文模式下必须 nameEn 和 fileUrlEn 都存在
+        const filtered = data.filter((item) => {
+          if (language === "en") {
+            return item.nameEn?.trim() && item.fileUrlEn?.trim();
+          }
+          return item.name?.trim() && item.fileUrl?.trim();
+        });
+
+        setDownloadItems(filtered);
       } catch {
         setDownloadItems([]);
       } finally {
@@ -104,7 +124,7 @@ export default function Support() {
 
     fetchFaqItems();
     fetchDownloadItems();
-  }, []);
+  }, [language]);
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -184,14 +204,16 @@ export default function Support() {
                             isOpen ? "border-b border-gray-200 pb-4" : ""
                           }`}
                         >
-                          <span className="font-semibold pr-4">{item.question}</span>
+                          <span className="font-semibold pr-4">
+                            {language === "en" ? item.questionEn : item.question}
+                          </span>
                           <span className="text-2xl text-blue-600">
                             {isOpen ? "−" : "+"}
                           </span>
                         </div>
                         {isOpen ? (
                           <p className="text-[14px] leading-[28px] text-gray-600">
-                            {item.answer}
+                            {language === "en" ? item.answerEn : item.answer}
                           </p>
                         ) : null}
                       </button>
@@ -243,7 +265,9 @@ export default function Support() {
                             <FileText className="h-6 w-6 text-blue-600" aria-hidden="true" />
                           </div>
                           <div>
-                            <div className="font-semibold text-gray-900">{item.name}</div>
+                            <div className="font-semibold text-gray-900">
+                              {language === "en" ? item.nameEn : item.name}
+                            </div>
                             <div className="text-[14px] text-gray-500">
                               {item.fileType} · {item.fileSize}
                             </div>
@@ -251,7 +275,7 @@ export default function Support() {
                         </div>
                         <a
                           className="inline-flex items-center gap-2 rounded-[10px] bg-blue-600 px-4 py-2 text-[16px] text-white"
-                          href={item.fileUrl}
+                          href={language === "en" ? item.fileUrlEn! : item.fileUrl}
                           target={item.actionType === "preview" ? "_blank" : undefined}
                           rel={item.actionType === "preview" ? "noopener noreferrer" : undefined}
                         >

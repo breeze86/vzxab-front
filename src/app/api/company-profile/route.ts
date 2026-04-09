@@ -11,6 +11,7 @@ export async function GET() {
       phone: profile?.phone ?? "",
       email: profile?.email ?? "",
       address: profile?.address ?? "",
+      addressEn: profile?.addressEn,
     },
     {
       headers: {

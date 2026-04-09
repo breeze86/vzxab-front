@@ -9,13 +9,16 @@ import { useTranslation } from "@/app/i18n";
 type ApiHeroBannerItem = {
   id: string;
   title: string;
+  titleEn: string | null;
   summary: string;
+  summaryEn: string | null;
   mediaType: "image" | "video";
   videoPlayMode?: "hover" | "auto";
   imageUrl?: string | null;
   videoUrl?: string | null;
   videoPosterUrl?: string | null;
   linkUrl: string;
+  linkUrlEn: string | null;
 };
 
 type SlideDirection = "next" | "prev";
@@ -24,17 +27,36 @@ const AUTO_SWITCH_MS = 5000;
 const ANIMATION_MS = 480;
 const EASING = "cubic-bezier(0.22, 1, 0.36, 1)";
 
-const normalizeBanner = (item: ApiHeroBannerItem): HeroBannerItem => ({
-  id: item.id,
-  title: item.title,
-  summary: item.summary,
-  mediaType: item.mediaType,
-  videoPlayMode: item.videoPlayMode === "auto" ? "auto" : "hover",
-  imageUrl: item.imageUrl ?? undefined,
-  videoUrl: item.videoUrl ?? undefined,
-  videoPosterUrl: item.videoPosterUrl ?? undefined,
-  linkUrl: item.linkUrl,
-});
+const normalizeBanner = (item: ApiHeroBannerItem, language: string): HeroBannerItem | null => {
+  // 根据语言选择对应字段
+  const title = language === "en" ? item.titleEn : item.title;
+  const summary = language === "en" ? item.summaryEn : item.summary;
+  const linkUrl = language === "en" ? item.linkUrlEn : item.linkUrl;
+
+  // 完整性校验：英文模式下必须所有英文字段都存在
+  if (language === "en") {
+    if (!item.titleEn?.trim() || !item.summaryEn?.trim() || !item.linkUrlEn?.trim()) {
+      return null;
+    }
+  }
+
+  // 中文模式下检查中文字段
+  if (!item.title?.trim() || !item.summary?.trim() || !item.linkUrl?.trim()) {
+    return null;
+  }
+
+  return {
+    id: item.id,
+    title: title!,
+    summary: summary!,
+    mediaType: item.mediaType,
+    videoPlayMode: item.videoPlayMode === "auto" ? "auto" : "hover",
+    imageUrl: item.imageUrl ?? undefined,
+    videoUrl: item.videoUrl ?? undefined,
+    videoPosterUrl: item.videoPosterUrl ?? undefined,
+    linkUrl: linkUrl!,
+  };
+};
 
 const isValidBanner = (item: Partial<ApiHeroBannerItem>) => {
   if (!item.id || !item.title || !item.summary || !item.linkUrl) {
@@ -83,7 +105,8 @@ export default function Hero() {
         }
         const normalized = data
           .filter((item) => isValidBanner(item))
-          .map((item) => normalizeBanner(item));
+          .map((item) => normalizeBanner(item, language))
+          .filter((item): item is HeroBannerItem => item !== null);
         syncBanners(normalized.length ? normalized : heroBannersFallback[language]);
       } catch {
         syncBanners(heroBannersFallback[language]);

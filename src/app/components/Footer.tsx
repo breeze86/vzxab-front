@@ -9,12 +9,14 @@ type CompanyProfile = {
   phone: string;
   email: string;
   address: string;
+  addressEn: string | null;
 };
 
 const emptyProfile: CompanyProfile = {
   phone: "",
   email: "",
   address: "",
+  addressEn: null,
 };
 
 function ContactValue({ value, isLoading, notConfigured }: { value: string; isLoading: boolean; notConfigured: string }) {
@@ -56,6 +58,7 @@ export default function Footer() {
           phone: data.phone ?? "",
           email: data.email ?? "",
           address: data.address ?? "",
+          addressEn: data.addressEn ?? null,
         });
       } catch {
         setProfile(emptyProfile);
@@ -128,7 +131,11 @@ export default function Footer() {
             </div>
             <div className="flex gap-2 text-[16px] leading-[24px] text-gray-400">
               <MapPin className="mt-1 h-4 w-4 shrink-0 text-blue-300" aria-hidden="true" />
-              <ContactValue value={profile.address} isLoading={isLoading} notConfigured={t.footer.notConfigured} />
+              <ContactValue
+                value={language === "en" ? (profile.addressEn || "") : profile.address}
+                isLoading={isLoading}
+                notConfigured={t.footer.notConfigured}
+              />
             </div>
           </div>
         </div>

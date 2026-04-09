@@ -67,7 +67,7 @@ const formatDate = (value: string) => {
   return date.toISOString().slice(0, 10);
 };
 
-const mapSeedReviews = (): ReviewItem[] =>
+const mapSeedReviews = (language: string): ReviewItem[] =>
   seedReviews.map((review, index) => ({
     id: index + 1,
     name: review.name,
@@ -78,7 +78,7 @@ const mapSeedReviews = (): ReviewItem[] =>
     replies: review.reply
       ? [
           {
-            adminName: "Admin",
+            adminName: language === "en" ? "Admin" : "管理员",
             repliedAt: review.reply.date,
             content: review.reply.text,
           },
@@ -87,8 +87,8 @@ const mapSeedReviews = (): ReviewItem[] =>
   }));
 
 export default function Reviews() {
-  const { t } = useTranslation();
-  const [items, setItems] = useState<ReviewItem[]>(mapSeedReviews());
+  const { t, language } = useTranslation();
+  const [items, setItems] = useState<ReviewItem[]>(mapSeedReviews(language));
   const [summary, setSummary] = useState<ReviewSummary>(() => {
     const total = seedReviews.reduce((sum, item) => sum + item.rating, 0);
     const count = seedReviews.length;
