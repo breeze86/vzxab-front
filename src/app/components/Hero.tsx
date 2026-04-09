@@ -4,6 +4,7 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { heroBannersFallback, type HeroBannerItem } from "../content";
 import { ImageWithFallback } from "./figma/ImageWithFallback";
+import { useTranslation } from "@/app/i18n";
 
 type ApiHeroBannerItem = {
   id: string;
@@ -46,6 +47,7 @@ const isValidBanner = (item: Partial<ApiHeroBannerItem>) => {
 };
 
 export default function Hero() {
+  const { t, language } = useTranslation();
   const [banners, setBanners] = useState<HeroBannerItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -71,27 +73,27 @@ export default function Hero() {
       try {
         const response = await fetch("/api/hero-banners", { cache: "no-store" });
         if (!response.ok) {
-          syncBanners(heroBannersFallback);
+          syncBanners(heroBannersFallback[language]);
           return;
         }
         const data: ApiHeroBannerItem[] = await response.json();
         if (!Array.isArray(data)) {
-          syncBanners(heroBannersFallback);
+          syncBanners(heroBannersFallback[language]);
           return;
         }
         const normalized = data
           .filter((item) => isValidBanner(item))
           .map((item) => normalizeBanner(item));
-        syncBanners(normalized.length ? normalized : heroBannersFallback);
+        syncBanners(normalized.length ? normalized : heroBannersFallback[language]);
       } catch {
-        syncBanners(heroBannersFallback);
+        syncBanners(heroBannersFallback[language]);
       } finally {
         setIsLoading(false);
       }
     };
 
     fetchHeroBanners();
-  }, []);
+  }, [language]);
 
   useEffect(() => {
     if (previousIndex === null) {
@@ -423,7 +425,7 @@ export default function Hero() {
                         {banner.summary}
                       </p>
                       <span className="mt-7 inline-flex rounded-pill bg-blue-600 px-7 py-3 text-[16px] font-semibold text-white shadow-[0_18px_30px_-18px_rgba(21,93,252,0.9)]">
-                        了解详情
+                        {t.hero.learnMore}
                       </span>
                     </div>
                   </div>
@@ -435,7 +437,7 @@ export default function Hero() {
           <div className="pointer-events-none absolute inset-0 z-40 flex items-stretch justify-between">
             <button
               type="button"
-              aria-label="上一张 Banner"
+              aria-label={t.hero.prevBanner}
               onClick={handlePrevious}
               disabled={banners.length <= 1}
               className="pointer-events-auto group inline-flex h-full w-14 items-center justify-center bg-gradient-to-r from-black/10 to-transparent text-white/45 transition-all duration-300 hover:from-black/35 hover:text-white focus-visible:from-black/35 disabled:cursor-not-allowed disabled:opacity-20 sm:w-16 lg:w-20"
@@ -449,7 +451,7 @@ export default function Hero() {
             </button>
             <button
               type="button"
-              aria-label="下一张 Banner"
+              aria-label={t.hero.nextBanner}
               onClick={handleNext}
               disabled={banners.length <= 1}
               className="pointer-events-auto group inline-flex h-full w-14 items-center justify-center bg-gradient-to-l from-black/10 to-transparent text-white/45 transition-all duration-300 hover:from-black/35 hover:text-white focus-visible:from-black/35 disabled:cursor-not-allowed disabled:opacity-20 sm:w-16 lg:w-20"
@@ -469,7 +471,7 @@ export default function Hero() {
                 const isActive = index === currentIndex;
                 return (
                   <button
-                    aria-label={`切换到第 ${index + 1} 个 Banner：${banner.title}`}
+                    aria-label={t.hero.goToBanner.replace('{n}', String(index + 1)).replace('{title}', banner.title)}
                     className={`h-2.5 rounded-full transition-all duration-300 ${
                       isActive ? "w-8 bg-white" : "w-2.5 bg-white/60 hover:bg-white/85"
                     }`}

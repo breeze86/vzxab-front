@@ -2,16 +2,18 @@
 
 import Image from "next/image";
 import { scrollToSection } from "@/lib/scroll";
-
-const navItems = [
-  { label: "产品", targetId: "products" },
-  // { label: "特性", targetId: "features" },
-  { label: "规格", targetId: "specs" },
-  { label: "评价", targetId: "reviews" },
-  { label: "支持", targetId: "support" },
-];
+import { useTranslation } from "@/app/i18n";
 
 export default function Header() {
+  const { t, language, setLanguage } = useTranslation();
+
+  const navItems = [
+    { label: t.nav.products, targetId: "products" },
+    { label: t.nav.specs, targetId: "specs" },
+    { label: t.nav.reviews, targetId: "reviews" },
+    { label: t.nav.support, targetId: "support" },
+  ];
+
   const handleNavigate = (targetId: string) => (event: React.MouseEvent<HTMLAnchorElement>) => {
     event.preventDefault();
     scrollToSection(targetId);
@@ -42,7 +44,31 @@ export default function Header() {
             </a>
           ))}
         </nav>
-        <div className="flex items-center gap-4"></div>
+        <div className="flex items-center">
+          <button
+            onClick={() => setLanguage("zh")}
+            className={`cursor-pointer px-1.5 py-1 text-[14px] font-medium transition-colors duration-200 ${
+              language === "zh"
+                ? "text-blue-600 font-semibold"
+                : "text-gray-400 hover:text-blue-500"
+            }`}
+            aria-label="切换到中文"
+          >
+            中
+          </button>
+          <span className="text-gray-300">/</span>
+          <button
+            onClick={() => setLanguage("en")}
+            className={`cursor-pointer px-1.5 py-1 text-[14px] font-medium transition-colors duration-200 ${
+              language === "en"
+                ? "text-blue-600 font-semibold"
+                : "text-gray-400 hover:text-blue-500"
+            }`}
+            aria-label="Switch to English"
+          >
+            EN
+          </button>
+        </div>
       </div>
     </header>
   );

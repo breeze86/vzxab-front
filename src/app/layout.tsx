@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Manrope, Sora } from "next/font/google";
 import "./globals.css";
+import { LanguageProvider } from "./i18n";
 
 const sora = Sora({
   variable: "--font-heading",
@@ -28,7 +29,9 @@ export default function RootLayout({
   return (
     <html lang="zh-Hans">
       <body className={`${sora.variable} ${manrope.variable} font-body`}>
-        {children}
+        <LanguageProvider>
+          {children}
+        </LanguageProvider>
       </body>
     </html>
   );

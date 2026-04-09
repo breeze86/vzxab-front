@@ -1,3 +1,5 @@
+"use client";
+
 import {
   Gauge,
   Shield,
@@ -7,8 +9,12 @@ import {
   Wind,
 } from "lucide-react";
 import { features } from "../content";
+import { useTranslation } from "@/app/i18n";
 
 export default function Features() {
+  const { language } = useTranslation();
+  const currentFeatures = features[language as keyof typeof features];
+
   return (
     <section id="features" className="py-20">
       <div className="mx-auto max-w-page px-6">
@@ -19,7 +25,7 @@ export default function Features() {
           领先的技术创新，为您带来卓越的散热体验
         </p>
         <div className="mt-16 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {features.map((item, index) => {
+          {currentFeatures.map((item, index) => {
             const icons = [
               Wind,
               Volume2,

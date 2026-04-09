@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { sha256 } from "js-sha256";
 import { BadgeCheck, MessageCircle, Send, Star, Trash2, User } from "lucide-react";
 import { reviews as seedReviews } from "../content";
+import { useTranslation } from "@/app/i18n";
 
 type ReviewReply = {
   id?: number;
@@ -77,7 +78,7 @@ const mapSeedReviews = (): ReviewItem[] =>
     replies: review.reply
       ? [
           {
-            adminName: "管理员",
+            adminName: "Admin",
             repliedAt: review.reply.date,
             content: review.reply.text,
           },
@@ -86,6 +87,7 @@ const mapSeedReviews = (): ReviewItem[] =>
   }));
 
 export default function Reviews() {
+  const { t } = useTranslation();
   const [items, setItems] = useState<ReviewItem[]>(mapSeedReviews());
   const [summary, setSummary] = useState<ReviewSummary>(() => {
     const total = seedReviews.reduce((sum, item) => sum + item.rating, 0);
@@ -230,7 +232,7 @@ export default function Reviews() {
   const handleAdminLogin = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (!adminForm.account || !adminForm.password) {
-      setAdminError("请输入管理员账号和密码");
+      setAdminError(t.reviews.adminOnly);
       return;
     }
     setAdminError("");
@@ -246,7 +248,7 @@ export default function Reviews() {
         }),
       });
       if (!response.ok) {
-        setAdminError("账号或密码错误");
+        setAdminError(t.reviews.adminOnly);
         return;
       }
       const data = await response.json();
@@ -343,20 +345,20 @@ export default function Reviews() {
         <div className="text-center">
           <div className="inline-flex items-center gap-4">
             <h2 className="font-heading text-[36px] font-semibold leading-[40px] tracking-[0.4px] text-gray-900">
-              用户评价
+              {t.reviews.title}
             </h2>
             {adminSession.authenticated ? (
               <div className="inline-flex items-center gap-3">
                 <span className="inline-flex items-center gap-2 rounded-pill bg-gray-100 px-4 py-1 text-[14px] leading-[20px] text-gray-900">
                   <BadgeCheck className="h-4 w-4 text-blue-600" aria-hidden="true" />
-                  管理员已登录
+                  {t.reviews.adminLoggedIn}
                 </span>
                 <button
                   className="rounded-pill border border-gray-200 px-4 py-1 text-[14px] font-semibold text-gray-700 transition hover:bg-gray-100"
                   type="button"
                   onClick={handleAdminLogout}
                 >
-                  退出
+                  {t.reviews.logout}
                 </button>
               </div>
             ) : null}
@@ -374,18 +376,18 @@ export default function Reviews() {
               );
             })}
             <span className="text-[20px] leading-[28px] text-gray-900">
-              {averageRating} / 5
+              {averageRating} {t.reviews.rating}
             </span>
           </div>
           <p className="mt-2 text-[16px] text-gray-600">
-            基于 {totalReviews} 条用户评价
+            {t.reviews.basedOn.replace("{count}", String(totalReviews))}
           </p>
         </div>
 
         <div className="mt-20 grid grid-cols-1 gap-12 lg:grid-cols-2">
           <div>
             <h3 className="mb-4 text-[24px] font-semibold text-gray-900">
-              用户评论
+              {t.reviews.customerReviews}
             </h3>
             <div className="flex flex-col gap-4">
               {items.map((review) => (
@@ -432,8 +434,8 @@ export default function Reviews() {
                               className="inline-flex cursor-pointer items-center rounded-full p-1 text-gray-400 transition hover:bg-red-50 hover:text-red-600"
                               type="button"
                               onClick={() => handleDeleteClick(review.id)}
-                              title="删除评论"
-                              aria-label="删除评论"
+                              title={t.reviews.delete}
+                              aria-label={t.reviews.delete}
                             >
                               <Trash2 className="h-4 w-4" aria-hidden="true" />
                             </button>
@@ -445,8 +447,8 @@ export default function Reviews() {
                                     prev === review.id ? null : review.id ?? null
                                   )
                                 }
-                                title="回复消息"
-                                aria-label="回复消息"
+                                title={t.reviews.reply}
+                                aria-label={t.reviews.reply}
                               >
                                 <MessageCircle className="h-4 w-4" aria-hidden="true" />
                               </button>
@@ -454,11 +456,11 @@ export default function Reviews() {
                             {activeReplyId === review.id ? (
                               <div className="mt-3 rounded-[12px] border border-gray-200 bg-white p-4">
                                 <div className="text-[14px] font-semibold text-gray-900">
-                                  管理员回复
+                                  {t.reviews.reply}
                                 </div>
                                 <textarea
                                   className="mt-2 min-h-[96px] w-full rounded-[10px] border border-[#d1d5dc] px-4 py-3 text-[14px]"
-                                  placeholder="输入回复内容..."
+                                  placeholder={t.reviews.reviewPlaceholder}
                                   value={replyDrafts[review.id] ?? ""}
                                   onChange={(event) =>
                                     setReplyDrafts((prev) => ({
@@ -474,7 +476,7 @@ export default function Reviews() {
                                     disabled={replyingId === review.id}
                                     onClick={() => handleReplySubmit(review.id)}
                                   >
-                                    {replyingId === review.id ? "提交中..." : "提交回复"}
+                                    {replyingId === review.id ? t.reviews.submitting : t.reviews.submitReply}
                                   </button>
                                 </div>
                               </div>
@@ -482,7 +484,7 @@ export default function Reviews() {
                           </>
                         ) : (
                           <div className="mt-4 text-[14px] text-gray-500">
-                            示例评论无法回复
+                            {t.reviews.demoReview}
                           </div>
                         )
                       ) : null}
@@ -496,7 +498,7 @@ export default function Reviews() {
                               <div>
                                 <div className="mb-2 flex items-center justify-between">
                                   <span className="font-semibold text-blue-700">
-                                    {reply.adminName}回复
+                                    {reply.adminName} {t.reviews.replyBy}
                                   </span>
                                   <span className="text-[14px] text-gray-500">
                                     {formatDate(reply.repliedAt)}
@@ -518,17 +520,17 @@ export default function Reviews() {
 
           <div>
             <h3 className="mb-4 text-[24px] font-semibold text-gray-900">
-              发表评论
+              {t.reviews.writeReview}
             </h3>
             <div className="rounded-xl bg-[linear-gradient(131deg,#eff6ff,#eef2ff)] p-8">
               <form className="flex flex-col gap-6" onSubmit={handleSubmit}>
                 <div className="flex flex-col gap-2">
                   <label className="text-[14px] font-semibold text-gray-900">
-                    姓名 <span className="text-red-500">*</span>
+                    {t.reviews.name} <span className="text-red-500">*</span>
                   </label>
                   <input
                     className="rounded-[10px] border border-[#d1d5dc] px-4 py-3 text-[16px]"
-                    placeholder="请输入您的姓名"
+                    placeholder={t.reviews.namePlaceholder}
                     value={formState.name}
                     maxLength={50}
                     onChange={(event) =>
@@ -537,18 +539,18 @@ export default function Reviews() {
                   />
                   {isReviewNameInvalid ? (
                     <div className="text-[12px] text-red-500">
-                      姓名至少需要 2 个字符
+                      {t.reviews.nameError}
                     </div>
                   ) : null}
                 </div>
                 <div className="flex flex-col gap-2">
                   <label className="text-[14px] font-semibold text-gray-900">
-                    邮箱地址 <span className="text-red-500">*</span>
+                    {t.reviews.email} <span className="text-red-500">*</span>
                   </label>
                   <input
                     type="email"
                     className="rounded-[10px] border border-[#d1d5dc] px-4 py-3 text-[16px]"
-                    placeholder="example@email.com"
+                    placeholder={t.reviews.emailPlaceholder}
                     value={formState.email}
                     maxLength={100}
                     onChange={(event) =>
@@ -557,16 +559,16 @@ export default function Reviews() {
                   />
                   {isReviewEmailInvalid ? (
                     <div className="text-[12px] text-red-500">
-                      请输入有效的邮箱地址
+                      {t.reviews.emailError}
                     </div>
                   ) : null}
                   <span className="text-[12px] text-gray-500">
-                    您的邮箱地址不会被公开显示
+                    {t.reviews.emailPrivacy}
                   </span>
                 </div>
                 <div className="flex flex-col gap-2">
                   <label className="text-[14px] font-semibold text-gray-900">
-                    评分 <span className="text-red-500">*</span>
+                    {t.reviews.ratingLabel} <span className="text-red-500">*</span>
                   </label>
                   <div className="flex gap-2">
                     {Array.from({ length: 5 }).map((_, index) => (
@@ -576,7 +578,7 @@ export default function Reviews() {
                         onClick={() =>
                           setFormState((prev) => ({ ...prev, rating: index + 1 }))
                         }
-                        aria-label={`设置评分 ${index + 1}`}
+                        aria-label={`${t.reviews.ratingLabel} ${index + 1}`}
                       >
                         <Star
                           className={`h-8 w-8 ${
@@ -591,11 +593,11 @@ export default function Reviews() {
                 </div>
                 <div className="flex flex-col gap-2">
                   <label className="text-[14px] font-semibold text-gray-900">
-                    评论内容 <span className="text-red-500">*</span>
+                    {t.reviews.reviewContent} <span className="text-red-500">*</span>
                   </label>
                   <textarea
                     className="min-h-[146px] rounded-[10px] border border-[#d1d5dc] px-4 py-3 text-[16px]"
-                    placeholder="分享您的使用体验..."
+                    placeholder={t.reviews.reviewPlaceholder}
                     value={formState.content}
                     onChange={(event) =>
                       setFormState((prev) => ({ ...prev, content: event.target.value }))
@@ -608,7 +610,7 @@ export default function Reviews() {
                         : "text-gray-500"
                     }`}
                   >
-                    {formState.content.length}/{reviewMaxChars}
+                    {t.reviews.charsLimit.replace("{current}", String(formState.content.length)).replace("{max}", String(reviewMaxChars))}
                   </div>
                 </div>
                 <button
@@ -617,7 +619,7 @@ export default function Reviews() {
                   disabled={isSubmitting || isReviewInvalid}
                 >
                   <Send className="h-5 w-5" aria-hidden="true" />
-                  {isSubmitting ? "提交中..." : "提交评论"}
+                  {isSubmitting ? t.reviews.submitting : t.reviews.submitReview}
                 </button>
               </form>
             </div>
@@ -629,7 +631,7 @@ export default function Reviews() {
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4 py-6"
           role="dialog"
           aria-modal="true"
-          aria-label="管理员登录"
+          aria-label={t.reviews.adminLogin}
           onClick={() => setIsAdminOpen(false)}
         >
           <div
@@ -639,17 +641,17 @@ export default function Reviews() {
             <div className="mb-4 flex items-center justify-between">
               <div>
                 <div className="text-[18px] font-semibold text-gray-900">
-                  管理员登录
+                  {t.reviews.adminLogin}
                 </div>
                 <div className="text-[13px] text-gray-500">
-                  仅限授权管理员使用
+                  {t.reviews.adminOnly}
                 </div>
               </div>
               <button
                 className="rounded-full p-2 text-gray-500 transition hover:bg-gray-100"
                 type="button"
                 onClick={() => setIsAdminOpen(false)}
-                aria-label="关闭"
+                aria-label={t.reviews.cancel}
               >
                 ×
               </button>
@@ -657,11 +659,11 @@ export default function Reviews() {
             <form className="flex flex-col gap-4" onSubmit={handleAdminLogin}>
               <div className="flex flex-col gap-2">
                 <label className="text-[13px] font-semibold text-gray-900">
-                  管理员账号
+                  {t.reviews.account}
                 </label>
                 <input
                   className="rounded-[10px] border border-[#d1d5dc] px-4 py-3 text-[15px]"
-                  placeholder="请输入管理员账号"
+                  placeholder={t.reviews.account}
                   value={adminForm.account}
                   onChange={(event) =>
                     setAdminForm((prev) => ({ ...prev, account: event.target.value }))
@@ -670,12 +672,12 @@ export default function Reviews() {
               </div>
               <div className="flex flex-col gap-2">
                 <label className="text-[13px] font-semibold text-gray-900">
-                  登录密码
+                  {t.reviews.password}
                 </label>
                 <input
                   type="password"
                   className="rounded-[10px] border border-[#d1d5dc] px-4 py-3 text-[15px]"
-                  placeholder="请输入密码"
+                  placeholder={t.reviews.password}
                   value={adminForm.password}
                   onChange={(event) =>
                     setAdminForm((prev) => ({ ...prev, password: event.target.value }))
@@ -692,14 +694,14 @@ export default function Reviews() {
                   onClick={() => setIsAdminOpen(false)}
                   disabled={isAdminLoading}
                 >
-                  取消
+                  {t.reviews.cancel}
                 </button>
                 <button
                   className="flex-1 rounded-pill bg-blue-600 px-4 py-2 text-[14px] font-semibold text-white disabled:cursor-not-allowed disabled:opacity-70"
                   type="submit"
                   disabled={isAdminLoading}
                 >
-                  {isAdminLoading ? "登录中..." : "登录"}
+                  {isAdminLoading ? t.reviews.loggingIn : t.reviews.login}
                 </button>
               </div>
             </form>
@@ -711,7 +713,7 @@ export default function Reviews() {
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4 py-6"
           role="dialog"
           aria-modal="true"
-          aria-label="删除评论确认"
+          aria-label={t.reviews.confirmDelete}
           onClick={() => setIsDeleteOpen(false)}
         >
           <div
@@ -719,10 +721,10 @@ export default function Reviews() {
             onClick={(event) => event.stopPropagation()}
           >
             <div className="mb-3 text-[18px] font-semibold text-gray-900">
-              确认删除评论
+              {t.reviews.confirmDelete}
             </div>
             <p className="text-[14px] leading-[22px] text-gray-600">
-              删除后将无法恢复，确定要继续吗？
+              {t.reviews.deleteWarning}
             </p>
             <div className="mt-6 flex gap-3">
               <button
@@ -731,7 +733,7 @@ export default function Reviews() {
                 onClick={() => setIsDeleteOpen(false)}
                 disabled={isDeleting}
               >
-                取消
+                {t.reviews.cancel}
               </button>
               <button
                 className="flex-1 rounded-pill bg-red-600 px-4 py-2 text-[14px] font-semibold text-white disabled:cursor-not-allowed disabled:opacity-70"
@@ -739,7 +741,7 @@ export default function Reviews() {
                 onClick={handleDeleteConfirm}
                 disabled={isDeleting}
               >
-                {isDeleting ? "删除中..." : "确认删除"}
+                {isDeleting ? t.reviews.submitting : t.reviews.delete}
               </button>
             </div>
           </div>

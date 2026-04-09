@@ -2,6 +2,7 @@
 
 import { ArrowDown, CircleHelp, Download, FileText, Headset, Send } from "lucide-react";
 import { useEffect, useState } from "react";
+import { useTranslation } from "@/app/i18n";
 
 type FaqItem = {
   id: number;
@@ -22,6 +23,7 @@ const faqSkeletonRows = Array.from({ length: 4 });
 const downloadSkeletonRows = Array.from({ length: 3 });
 
 export default function Support() {
+  const { t } = useTranslation();
   const [openFaqId, setOpenFaqId] = useState<number | null>(null);
   const [faqItems, setFaqItems] = useState<FaqItem[]>([]);
   const [isFaqsLoading, setIsFaqsLoading] = useState(true);
@@ -52,6 +54,8 @@ export default function Support() {
     isContactNameInvalid ||
     isContactEmailInvalid ||
     formState.message.length > messageMaxChars;
+
+  const inquiryTypes = t.support.inquiryTypes;
 
   useEffect(() => {
     const fetchFaqItems = async () => {
@@ -146,7 +150,7 @@ export default function Support() {
             <div className="mb-6 flex items-center gap-3">
               <CircleHelp className="h-8 w-8 text-blue-600" aria-hidden="true" />
               <h3 className="font-heading text-[30px] leading-[36px] text-gray-900">
-                常见问题
+                {t.support.faq}
               </h3>
             </div>
             <div className="flex flex-col gap-4">
@@ -197,7 +201,7 @@ export default function Support() {
 
               {!isFaqsLoading && faqItems.length === 0 ? (
                 <div className="rounded-[24px] border border-dashed border-gray-200 bg-white px-6 py-8 text-center text-[15px] text-gray-500">
-                  暂无常见问题内容
+                  {t.support.noFaq}
                 </div>
               ) : null}
             </div>
@@ -205,7 +209,7 @@ export default function Support() {
             <div id="download-center" className="mt-8 scroll-mt-24">
               <div className="mb-4 flex items-center gap-3">
                 <Download className="h-7 w-7 text-blue-600" aria-hidden="true" />
-                <h4 className="text-[24px] font-semibold text-gray-900">下载中心</h4>
+                <h4 className="text-[24px] font-semibold text-gray-900">{t.support.downloads}</h4>
               </div>
               <div className="flex flex-col gap-3">
                 {isDownloadsLoading
@@ -252,7 +256,7 @@ export default function Support() {
                           rel={item.actionType === "preview" ? "noopener noreferrer" : undefined}
                         >
                           <ArrowDown className="h-4 w-4" aria-hidden="true" />
-                          下载
+                          {t.support.downloads}
                         </a>
                       </div>
                     ))
@@ -260,7 +264,7 @@ export default function Support() {
 
                 {!isDownloadsLoading && downloadItems.length === 0 ? (
                   <div className="rounded-[14px] border border-dashed border-gray-200 bg-white px-6 py-8 text-center text-[15px] text-gray-500">
-                    暂无下载资料
+                    {t.support.noDownloads}
                   </div>
                 ) : null}
               </div>
@@ -271,18 +275,18 @@ export default function Support() {
             <div className="mb-6 flex items-center gap-3">
               <Headset className="h-8 w-8 text-blue-600" aria-hidden="true" />
               <h3 className="font-heading text-[30px] leading-[36px] text-gray-900">
-                联系我们
+                {t.support.contact}
               </h3>
             </div>
             <div className="rounded-xl border border-gray-200 bg-white p-[33px]">
               <form className="flex flex-col gap-6" onSubmit={handleSubmit}>
                 <div className="flex flex-col gap-2">
                   <label className="text-[14px] font-semibold text-gray-900">
-                    姓名 <span className="text-red-500">*</span>
+                    {t.support.name} <span className="text-red-500">*</span>
                   </label>
                   <input
                     className="rounded-[10px] border border-[#d1d5dc] px-4 py-3 text-[16px]"
-                    placeholder="请输入您的姓名"
+                    placeholder={t.support.namePlaceholder}
                     value={formState.name}
                     maxLength={50}
                     onChange={(event) =>
@@ -291,18 +295,18 @@ export default function Support() {
                   />
                   {isContactNameInvalid ? (
                     <div className="text-[12px] text-red-500">
-                      姓名至少需要 2 个字符
+                      {t.support.nameError}
                     </div>
                   ) : null}
                 </div>
                 <div className="flex flex-col gap-2">
                   <label className="text-[14px] font-semibold text-gray-900">
-                    邮箱地址 <span className="text-red-500">*</span>
+                    {t.support.email} <span className="text-red-500">*</span>
                   </label>
                   <input
                     type="email"
                     className="rounded-[10px] border border-[#d1d5dc] px-4 py-3 text-[16px]"
-                    placeholder="example@email.com"
+                    placeholder={t.support.emailPlaceholder}
                     value={formState.email}
                     maxLength={100}
                     onChange={(event) =>
@@ -311,13 +315,13 @@ export default function Support() {
                   />
                   {isContactEmailInvalid ? (
                     <div className="text-[12px] text-red-500">
-                      请输入有效的邮箱地址
+                      {t.support.emailError}
                     </div>
                   ) : null}
                 </div>
                 <div className="flex flex-col gap-2">
                   <label className="text-[14px] font-semibold text-gray-900">
-                    主题 <span className="text-red-500">*</span>
+                    {t.support.subject} <span className="text-red-500">*</span>
                   </label>
                   <select
                     className="rounded-[10px] border border-[#d1d5dc] px-4 py-3 text-[16px]"
@@ -326,24 +330,19 @@ export default function Support() {
                       setFormState((prev) => ({ ...prev, subject: event.target.value }))
                     }
                   >
-                    <option value="">请选择咨询主题</option>
-                    <option>产品咨询</option>
-                    <option>技术支持</option>
-                    <option>合作洽谈</option>
-                    <option>功能建议</option>
-                    <option>价格咨询</option>
-                    <option>售后保修</option>
-                    <option>发票开具</option>
-                    <option>其他问题</option>
+                    <option value="">{t.support.subjectPlaceholder}</option>
+                    {inquiryTypes.map((type) => (
+                      <option key={type} value={type}>{type}</option>
+                    ))}
                   </select>
                 </div>
                 <div className="flex flex-col gap-2">
                   <label className="text-[14px] font-semibold text-gray-900">
-                    详细描述 <span className="text-red-500">*</span>
+                    {t.support.message} <span className="text-red-500">*</span>
                   </label>
                   <textarea
                     className="min-h-[170px] rounded-[10px] border border-[#d1d5dc] px-4 py-3 text-[16px]"
-                    placeholder="请详细描述您的问题..."
+                    placeholder={t.support.messagePlaceholder}
                     value={formState.message}
                     onChange={(event) =>
                       setFormState((prev) => ({ ...prev, message: event.target.value }))
@@ -356,17 +355,17 @@ export default function Support() {
                         : "text-gray-500"
                     }`}
                   >
-                    {formState.message.length}/{messageMaxChars}
+                    {t.reviews.charsLimit.replace("{current}", String(formState.message.length)).replace("{max}", String(messageMaxChars))}
                   </div>
                 </div>
                 {submitStatus === "success" ? (
                   <div className="text-[14px] text-green-600">
-                    已收到您的信息，我们会尽快联系您。
+                    {t.support.successMessage}
                   </div>
                 ) : null}
                 {submitStatus === "error" ? (
                   <div className="text-[14px] text-red-500">
-                    请完整填写信息后再提交。
+                    {t.support.errorMessage}
                   </div>
                 ) : null}
                 <button
@@ -375,19 +374,19 @@ export default function Support() {
                   disabled={isSubmitting || isContactInvalid}
                 >
                   <Send className="h-5 w-5" aria-hidden="true" />
-                  {isSubmitting ? "发送中..." : "发送消息"}
+                  {isSubmitting ? t.support.sending : t.support.sendMessage}
                 </button>
               </form>
             </div>
 
             <div id="warranty-policy" className="mt-8 scroll-mt-24 rounded-xl border border-[#bedbff] bg-[linear-gradient(160deg,#eff6ff,#eef2ff)] p-[25px]">
               <h4 className="mb-3 text-[18px] font-semibold text-gray-900">
-                保修政策
+                {t.support.warranty}
               </h4>
               <div className="grid gap-2 text-[14px] text-gray-700">
-                <span>• 所有产品享受 1 年质保服务</span>
-                <span>• 专业技术支持团队</span>
-                <span>• 全国联保服务网络</span>
+                {t.support.warrantyItems.map((item, index) => (
+                  <span key={index}>• {item}</span>
+                ))}
               </div>
             </div>
           </div>

@@ -3,6 +3,7 @@
 import { Mail, MapPin, Phone } from "lucide-react";
 import { useEffect, useState } from "react";
 import { scrollToSection } from "@/lib/scroll";
+import { useTranslation } from "@/app/i18n";
 
 type CompanyProfile = {
   phone: string;
@@ -16,29 +17,30 @@ const emptyProfile: CompanyProfile = {
   address: "",
 };
 
-const productLinks = [
-  { label: "机箱风扇", targetId: "products" },
-  { label: "CPU散热器", targetId: "products" },
-];
-
-const supportLinks = [
-  { label: "安装指南", targetId: "download-center" },
-  { label: "常见问题", targetId: "support" },
-  { label: "保修政策", targetId: "warranty-policy" },
-  { label: "联系我们", targetId: "support" },
-];
-
-function ContactValue({ value, isLoading }: { value: string; isLoading: boolean }) {
+function ContactValue({ value, isLoading, notConfigured }: { value: string; isLoading: boolean; notConfigured: string }) {
   if (isLoading) {
     return <span className="mt-1 block h-4 w-36 animate-pulse rounded-full bg-gray-700" />;
   }
 
-  return <span>{value || "暂未配置"}</span>;
+  return <span>{value || notConfigured}</span>;
 }
 
 export default function Footer() {
+  const { t, language } = useTranslation();
   const [profile, setProfile] = useState<CompanyProfile>(emptyProfile);
   const [isLoading, setIsLoading] = useState(true);
+
+  const productLinks = [
+    { label: language === "zh" ? "机箱风扇" : "Case Fans", targetId: "products" },
+    { label: language === "zh" ? "CPU散热器" : "CPU Coolers", targetId: "products" },
+  ];
+
+  const supportLinks = [
+    { label: language === "zh" ? "安装指南" : "Installation Guide", targetId: "download-center" },
+    { label: language === "zh" ? "常见问题" : "FAQ", targetId: "support" },
+    { label: language === "zh" ? "保修政策" : "Warranty", targetId: "warranty-policy" },
+    { label: language === "zh" ? "联系我们" : "Contact", targetId: "support" },
+  ];
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -79,12 +81,12 @@ export default function Footer() {
               <span>VZXAB</span>
             </div>
             <p className="text-[16px] leading-[24px] text-gray-400">
-              专注于提供高性能散热解决方案，让您的设备始终保持最佳状态。
+              {t.footer.tagline}
             </p>
           </div>
           <div>
             <div className="mb-3 font-heading text-[18px] font-semibold">
-              产品系列
+              {t.footer.products}
             </div>
             {productLinks.map((item) => (
               <a
@@ -99,7 +101,7 @@ export default function Footer() {
           </div>
           <div>
             <div className="mb-3 font-heading text-[18px] font-semibold">
-              客户支持
+              {t.footer.support}
             </div>
             {supportLinks.map((item) => (
               <a
@@ -114,28 +116,28 @@ export default function Footer() {
           </div>
           <div>
             <div className="mb-3 font-heading text-[18px] font-semibold">
-              联系方式
+              {t.footer.contact}
             </div>
             <div className="flex gap-2 text-[16px] leading-[24px] text-gray-400">
               <Phone className="mt-1 h-4 w-4 shrink-0 text-blue-300" aria-hidden="true" />
-              <ContactValue value={profile.phone} isLoading={isLoading} />
+              <ContactValue value={profile.phone} isLoading={isLoading} notConfigured={t.footer.notConfigured} />
             </div>
             <div className="flex gap-2 text-[16px] leading-[24px] text-gray-400">
               <Mail className="mt-1 h-4 w-4 shrink-0 text-blue-300" aria-hidden="true" />
-              <ContactValue value={profile.email} isLoading={isLoading} />
+              <ContactValue value={profile.email} isLoading={isLoading} notConfigured={t.footer.notConfigured} />
             </div>
             <div className="flex gap-2 text-[16px] leading-[24px] text-gray-400">
               <MapPin className="mt-1 h-4 w-4 shrink-0 text-blue-300" aria-hidden="true" />
-              <ContactValue value={profile.address} isLoading={isLoading} />
+              <ContactValue value={profile.address} isLoading={isLoading} notConfigured={t.footer.notConfigured} />
             </div>
           </div>
         </div>
         <div className="mt-8 flex flex-col gap-3 border-t border-[#1e2939] pt-4 text-[14px] text-gray-400 sm:flex-row sm:items-center sm:justify-between">
-          <span>© 2025 VZXAB. All rights reserved.</span>
+          <span>{t.footer.rights}</span>
           <div className="flex gap-6">
-            <span>隐私政策</span>
-            <span>使用条款</span>
-            <span>Cookie 政策</span>
+            <span>{t.footer.privacy}</span>
+            <span>{t.footer.terms}</span>
+            <span>{t.footer.cookies}</span>
           </div>
         </div>
       </div>
