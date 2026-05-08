@@ -27,7 +27,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="zh-Hans">
+    <html lang="en">
       <body className={`${sora.variable} ${manrope.variable} font-body`}>
         <LanguageProvider>
           {children}

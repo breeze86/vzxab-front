@@ -5,7 +5,7 @@ import { scrollToSection } from "@/lib/scroll";
 import { useTranslation } from "@/app/i18n";
 
 export default function Header() {
-  const { t, language, setLanguage } = useTranslation();
+  const { t } = useTranslation();
 
   const navItems = [
     { label: t.nav.products, targetId: "products" },
@@ -44,31 +44,6 @@ export default function Header() {
             </a>
           ))}
         </nav>
-        <div className="flex items-center">
-          <button
-            onClick={() => setLanguage("zh")}
-            className={`cursor-pointer px-1.5 py-1 text-[14px] font-medium transition-colors duration-200 ${
-              language === "zh"
-                ? "text-blue-600 font-semibold"
-                : "text-gray-400 hover:text-blue-500"
-            }`}
-            aria-label="切换到中文"
-          >
-            中
-          </button>
-          <span className="text-gray-300">/</span>
-          <button
-            onClick={() => setLanguage("en")}
-            className={`cursor-pointer px-1.5 py-1 text-[14px] font-medium transition-colors duration-200 ${
-              language === "en"
-                ? "text-blue-600 font-semibold"
-                : "text-gray-400 hover:text-blue-500"
-            }`}
-            aria-label="Switch to English"
-          >
-            EN
-          </button>
-        </div>
       </div>
     </header>
   );

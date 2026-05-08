@@ -23,13 +23,13 @@ const STORAGE_KEY = "vzxab-language";
 
 function getInitialLanguage(): Language {
   if (typeof window === "undefined") {
-    return "zh";
+    return "en";
   }
   const stored = localStorage.getItem(STORAGE_KEY) as Language | null;
   if (stored === "zh" || stored === "en") {
     return stored;
   }
-  return "zh";
+  return "en";
 }
 
 export function LanguageProvider({
@@ -37,7 +37,7 @@ export function LanguageProvider({
 }: {
   children: React.ReactNode;
 }) {
-  const [language, setLanguageState] = useState<Language>("zh");
+  const [language, setLanguageState] = useState<Language>("en");
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
