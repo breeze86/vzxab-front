@@ -141,7 +141,15 @@ export default function Footer() {
         </div>
         <div className="mt-8 flex flex-col gap-3 border-t border-[#1e2939] pt-4 text-[14px] text-gray-400 sm:flex-row sm:items-center sm:justify-between">
           <span>{t.footer.rights}</span>
-          <div className="flex gap-6">
+          <div className="flex flex-wrap gap-6">
+            <a
+              href="https://beian.miit.gov.cn/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="transition-colors hover:text-gray-200"
+            >
+              粤ICP备2026053933号
+            </a>
             <span>{t.footer.privacy}</span>
             <span>{t.footer.terms}</span>
             <span>{t.footer.cookies}</span>
